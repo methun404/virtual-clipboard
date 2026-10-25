@@ -24,8 +24,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <script type="module" crossorigin src="/assets/index-CJ5iva44.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-B76m6ywk.css">
+  <script type="module" crossorigin src="/assets/index-B9T8Vu03.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DjDC4n3M.css">
 </head>
 <body>
   <!-- Standard Top Navbar -->
@@ -55,6 +55,17 @@
             <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
           </svg>
           <span class="hide-xs">Install</span>
+        </button>
+
+        <button id="btn-share-guide" class="btn-nav" title="How to show in phone share list">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+          <span class="hide-mobile">Share Sheet</span>
         </button>
 
         <button id="btn-pair" class="btn-nav" title="Pair iPhone or Android">
@@ -352,6 +363,45 @@
           <div class="settings-btn-row">
             <button id="btn-reset-firebase" class="btn-subtle-tool danger">Reset to Local</button>
             <button id="btn-save-firebase" class="btn-primary-sync">Save & Connect</button>
+          </div>
+        </div>
+      </div>
+    <!-- Modal: Share Sheet Setup Guide -->
+    <div id="modal-share-guide" class="modal-dim hidden" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <div class="modal-top">
+          <h3>📱 Show in Phone Share List</h3>
+          <button class="btn-close" id="btn-close-share-guide">✕</button>
+        </div>
+        <div class="modal-inner">
+          <p class="settings-hint">
+            To make ClipSync appear in your phone's native Share list (just like WhatsApp, Telegram, etc.), follow this simple step:
+          </p>
+
+          <div class="guide-box">
+            <strong>🤖 Android (Google Chrome):</strong>
+            <p>1. Open this website in Chrome on your phone.</p>
+            <p>2. Tap the 3-dot menu (⋮) at top-right ➔ tap <strong>"Install app"</strong> (or "Add to Home screen").</p>
+            <p>3. <em>Done!</em> Android will instantly register ClipSync in your system Share list. Whenever you share any text or link from Twitter, YouTube, Chrome, etc., choose ClipSync!</p>
+          </div>
+
+          <div class="guide-box">
+            <strong>🍏 iPhone (iOS Safari):</strong>
+            <p>1. Open this website in Safari.</p>
+            <p>2. Tap the Share button (⎙) at the bottom ➔ tap <strong>"Add to Home Screen"</strong>.</p>
+          </div>
+
+          <div class="settings-btn-row">
+            <button id="btn-test-native-share" class="btn-primary-sync">
+              <span>Test Native Share Sheet</span>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+            </button>
           </div>
         </div>
       </div>

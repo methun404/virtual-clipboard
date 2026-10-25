@@ -84,6 +84,12 @@ const firebaseJsonInput = document.getElementById('firebase-json-input');
 const btnSaveFirebase = document.getElementById('btn-save-firebase');
 const btnResetFirebase = document.getElementById('btn-reset-firebase');
 
+// Modals: Share Target Guide
+const btnShareGuide = document.getElementById('btn-share-guide');
+const modalShareGuide = document.getElementById('modal-share-guide');
+const btnCloseShareGuide = document.getElementById('btn-close-share-guide');
+const btnTestNativeShare = document.getElementById('btn-test-native-share');
+
 /* ==========================================================================
    Initialization
    ========================================================================== */
@@ -604,6 +610,39 @@ function bindEvents() {
     showToast(on ? 'Sound on 🔔' : 'Sound muted 🔕', 'info');
   });
 
+  // Share Sheet Setup Guide Modal
+  if (btnShareGuide) {
+    btnShareGuide.addEventListener('click', () => {
+      sound.playPop();
+      modalShareGuide.classList.remove('hidden');
+    });
+  }
+
+  if (btnCloseShareGuide) {
+    btnCloseShareGuide.addEventListener('click', () => {
+      modalShareGuide.classList.add('hidden');
+    });
+  }
+
+  if (btnTestNativeShare) {
+    btnTestNativeShare.addEventListener('click', async () => {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'ClipSync Share Test',
+            text: 'Testing system share sheet for ClipSync',
+            url: window.location.href
+          });
+          showToast('Share sheet opened!', 'success');
+        } catch (err) {
+          // User cancelled
+        }
+      } else {
+        showToast('Web Share API requires mobile browser or Chrome', 'info');
+      }
+    });
+  }
+
   // Global Keyboard shortcuts
   window.addEventListener('keydown', (e) => {
     if (((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') || (e.key === '/' && document.activeElement !== mainInput && document.activeElement !== modalClipInput && document.activeElement !== searchInput)) {
@@ -614,11 +653,12 @@ function bindEvents() {
       closeMobileCompose();
       modalPair.classList.add('hidden');
       modalSettings.classList.add('hidden');
+      if (modalShareGuide) modalShareGuide.classList.add('hidden');
     }
   });
 
   // Backdrop click close
-  [modalCompose, modalPair, modalSettings].forEach((m) => {
+  [modalCompose, modalPair, modalSettings, modalShareGuide].forEach((m) => {
     if (m) {
       m.addEventListener('click', (e) => {
         if (e.target === m) m.classList.add('hidden');

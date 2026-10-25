@@ -1,13 +1,14 @@
 {
+  "id": "/",
   "name": "ClipSync — Virtual Clipboard",
   "short_name": "ClipSync",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#090D16",
-  "theme_color": "#6366F1",
-  "description": "Lightning-fast real-time cross-device clipboard manager for Mac, iPhone, and Android.",
+  "background_color": "#0B0D11",
+  "theme_color": "#4F46E5",
+  "description": "Lightning-fast real-time cross-device virtual clipboard manager for Mac, iPhone, and Android.",
   "categories": ["productivity", "utilities"],
   "icons": [
     {

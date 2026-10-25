@@ -1,10 +1,13 @@
-const CACHE_NAME = 'clipsync-v1.0.0';
+const CACHE_NAME = 'clipsync-v1.1.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
   '/icon.svg',
-  '/favicon.svg'
+  '/favicon.svg',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/icon-maskable.png'
 ];
 
 // Install: Cache core app shell
@@ -18,14 +21,13 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate: Clean up old caches & take control immediately
+// Activate: Take control immediately & clear old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', key);
             return caches.delete(key);
           }
         })
@@ -34,11 +36,33 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Stale-while-revalidate for static files, Network-only for Firebase/APIs
+// Fetch interceptor
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Ignore Firebase realtime websockets and cloud endpoints
+  // Handle POST share-target if browser sends multipart form data
+  if (event.request.method === 'POST' && (url.pathname === '/share-target' || url.pathname === '/')) {
+    event.respondWith((async () => {
+      try {
+        const formData = await event.request.formData();
+        const title = formData.get('title') || '';
+        const text = formData.get('text') || '';
+        const shareUrl = formData.get('url') || '';
+
+        const params = new URLSearchParams();
+        if (title) params.set('title', title);
+        if (text) params.set('text', text);
+        if (shareUrl) params.set('url', shareUrl);
+
+        return Response.redirect('/?' + params.toString(), 303);
+      } catch (err) {
+        return Response.redirect('/', 303);
+      }
+    })());
+    return;
+  }
+
+  // Bypass Firebase real-time database websockets and external endpoints
   if (
     url.hostname.includes('firebase') ||
     url.hostname.includes('googleapis') ||
@@ -48,7 +72,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Handle Share Target navigation or standard navigation
+  // Handle Navigation (including GET Share Target requests with query parameters)
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(async () => {
@@ -61,7 +85,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Stale-while-revalidate strategy for internal static assets
+  // Stale-while-revalidate strategy for static assets
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
@@ -79,7 +103,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Listen for messages from client (e.g. skipWaiting)
+// Skip waiting message handler
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();

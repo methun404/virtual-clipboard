@@ -1021,6 +1021,22 @@ kbd {
   gap: 8px;
 }
 
+.guide-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.guide-box strong {
+  color: var(--text-main);
+  display: block;
+  margin-bottom: 4px;
+}
+
 /* ==========================================================================
    Toasts
    ========================================================================== */
