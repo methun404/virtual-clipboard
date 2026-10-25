@@ -8,23 +8,36 @@ let currentFilter = 'all';
 let searchQuery = '';
 let deferredPrompt = null;
 
-// DOM Elements
+// Desktop DOM Elements
 const mainInput = document.getElementById('main-input');
 const btnSubmit = document.getElementById('btn-submit');
 const btnPasteSys = document.getElementById('btn-paste-sys');
 const sidebarTypeBadge = document.getElementById('sidebar-type-badge');
 
+// Mobile DOM Elements
+const btnMobileFab = document.getElementById('btn-mobile-fab');
+const btnMobQuickPaste = document.getElementById('btn-mob-quick-paste');
+const modalCompose = document.getElementById('modal-compose');
+const btnCloseCompose = document.getElementById('btn-close-compose');
+const modalClipInput = document.getElementById('modal-clip-input');
+const btnModalSubmit = document.getElementById('btn-modal-submit');
+const btnModalPaste = document.getElementById('btn-modal-paste');
+const modalTypeBadge = document.getElementById('modal-type-badge');
+const btnEmptyAdd = document.getElementById('btn-empty-add');
+
+// Search & Toolbar
 const searchInput = document.getElementById('search-input');
 const btnClearSearch = document.getElementById('btn-clear-search');
 const btnExportClips = document.getElementById('btn-export-clips');
 const btnClearHistory = document.getElementById('btn-clear-history');
 
+// Feed & State
 const clipsList = document.getElementById('clips-list');
 const emptyState = document.getElementById('empty-state');
 const loadingState = document.getElementById('loading-state');
 const toastContainer = document.getElementById('toast-container');
 
-// Navigation Filters
+// Desktop Filters
 const navItems = document.querySelectorAll('.nav-item');
 const countAll = document.getElementById('count-all');
 const countLink = document.getElementById('count-link');
@@ -32,7 +45,15 @@ const countText = document.getElementById('count-text');
 const countCode = document.getElementById('count-code');
 const countPinned = document.getElementById('count-pinned');
 
-// Header & Room
+// Mobile Filter Chips
+const mobileChips = document.querySelectorAll('.mobile-chip');
+const mobCountAll = document.getElementById('mob-count-all');
+const mobCountLink = document.getElementById('mob-count-link');
+const mobCountText = document.getElementById('mob-count-text');
+const mobCountCode = document.getElementById('mob-count-code');
+const mobCountPinned = document.getElementById('mob-count-pinned');
+
+// Header & Room Info
 const displayRoomId = document.getElementById('display-room-id');
 const sidebarRoomId = document.getElementById('sidebar-room-id');
 const statusDot = document.getElementById('status-dot');
@@ -46,7 +67,7 @@ const soundIconOff = document.getElementById('sound-icon-off');
 const btnInstallPwa = document.getElementById('btn-install-pwa');
 const btnSample = document.getElementById('btn-sample');
 
-// Modals
+// Modals: Pair
 const modalPair = document.getElementById('modal-pair');
 const btnClosePair = document.getElementById('btn-close-pair');
 const qrCanvasHolder = document.getElementById('qr-canvas-holder');
@@ -56,6 +77,7 @@ const inputCustomRoom = document.getElementById('input-custom-room');
 const btnSwitchRoom = document.getElementById('btn-switch-room');
 const btnNewRoom = document.getElementById('btn-new-room');
 
+// Modals: Settings
 const modalSettings = document.getElementById('modal-settings');
 const btnCloseSettings = document.getElementById('btn-close-settings');
 const firebaseJsonInput = document.getElementById('firebase-json-input');
@@ -127,7 +149,7 @@ function initServiceWorker() {
 }
 
 /* ==========================================================================
-   Web Share Target (Share sheet from iPhone / Android)
+   Web Share Target (Share menu on mobile)
    ========================================================================== */
 function handleWebShareTarget() {
   const params = new URLSearchParams(window.location.search);
@@ -149,7 +171,7 @@ function handleWebShareTarget() {
         device: getDeviceLabel()
       }).then(() => {
         sound.playSyncTone();
-        showToast('Shared item added! 📥', 'success');
+        showToast('Shared item added to clipboard! 📥', 'success');
       });
     }
 
@@ -174,17 +196,13 @@ function detectContentType(str) {
 
 function updateComposeBadge(val) {
   const type = detectContentType(val);
-  if (type === 'link') {
-    sidebarTypeBadge.textContent = '🔗 Link';
-  } else if (type === 'code') {
-    sidebarTypeBadge.textContent = '💻 Code';
-  } else {
-    sidebarTypeBadge.textContent = '📝 Text';
-  }
+  const label = type === 'link' ? '🔗 Link' : (type === 'code' ? '💻 Code' : '📝 Text');
+  if (sidebarTypeBadge) sidebarTypeBadge.textContent = label;
+  if (modalTypeBadge) modalTypeBadge.textContent = label;
 }
 
 /* ==========================================================================
-   Clips Grid Rendering
+   Rendering Clips Grid
    ========================================================================== */
 function renderClips() {
   let list = [...allClips];
@@ -199,7 +217,7 @@ function renderClips() {
     });
   }
 
-  // Sidebar Category Filter
+  // Category filter
   if (currentFilter === 'link') list = list.filter((c) => c.type === 'link');
   if (currentFilter === 'text') list = list.filter((c) => c.type === 'text');
   if (currentFilter === 'code') list = list.filter((c) => c.type === 'code');
@@ -252,7 +270,7 @@ function renderClips() {
         <span class="card-tag ${tagClass}">${tagEmoji}</span>
         <div class="card-top-actions">
           ${clip.type === 'link' ? `
-            <a href="${escapeHtml(clip.content.trim())}" target="_blank" rel="noopener noreferrer" class="btn-card-action" title="Open Link in New Tab">
+            <a href="${escapeHtml(clip.content.trim())}" target="_blank" rel="noopener noreferrer" class="btn-card-action" title="Open Link" aria-label="Open Link">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                 <polyline points="15 3 21 3 21 9"></polyline>
@@ -261,13 +279,13 @@ function renderClips() {
             </a>
           ` : ''}
 
-          <button class="btn-card-action btn-pin ${clip.pinned ? 'active-pin' : ''}" title="${clip.pinned ? 'Unpin' : 'Pin to top'}">
+          <button class="btn-card-action btn-pin ${clip.pinned ? 'active-pin' : ''}" title="${clip.pinned ? 'Unpin' : 'Pin'}" aria-label="Pin item">
             <svg viewBox="0 0 24 24" fill="${clip.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
             </svg>
           </button>
 
-          <button class="btn-card-action danger btn-delete" title="Delete">
+          <button class="btn-card-action danger btn-delete" title="Delete" aria-label="Delete item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -283,7 +301,7 @@ function renderClips() {
       <div class="card-footer">
         <span class="card-meta">${deviceIcon} ${clip.device || 'Web'} • ${timeAgo}</span>
 
-        <button class="btn-copy-card">
+        <button class="btn-copy-card" aria-label="Copy item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -293,7 +311,7 @@ function renderClips() {
       </div>
     `;
 
-    // Card Actions
+    // Bind item listeners
     card.querySelector('.btn-pin').addEventListener('click', () => {
       sound.playPop();
       syncService.togglePin(clip.id, clip.pinned);
@@ -319,11 +337,25 @@ function renderClips() {
 }
 
 function updateCounts() {
-  countAll.textContent = allClips.length;
-  countLink.textContent = allClips.filter((c) => c.type === 'link').length;
-  countText.textContent = allClips.filter((c) => c.type === 'text').length;
-  countCode.textContent = allClips.filter((c) => c.type === 'code').length;
-  countPinned.textContent = allClips.filter((c) => c.pinned).length;
+  const all = allClips.length;
+  const link = allClips.filter((c) => c.type === 'link').length;
+  const text = allClips.filter((c) => c.type === 'text').length;
+  const code = allClips.filter((c) => c.type === 'code').length;
+  const pinned = allClips.filter((c) => c.pinned).length;
+
+  // Desktop
+  if (countAll) countAll.textContent = all;
+  if (countLink) countLink.textContent = link;
+  if (countText) countText.textContent = text;
+  if (countCode) countCode.textContent = code;
+  if (countPinned) countPinned.textContent = pinned;
+
+  // Mobile
+  if (mobCountAll) mobCountAll.textContent = all;
+  if (mobCountLink) mobCountLink.textContent = link;
+  if (mobCountText) mobCountText.textContent = text;
+  if (mobCountCode) mobCountCode.textContent = code;
+  if (mobCountPinned) mobCountPinned.textContent = pinned;
 }
 
 /* ==========================================================================
@@ -332,7 +364,7 @@ function updateCounts() {
 async function copyText(text, btn) {
   try {
     await navigator.clipboard.writeText(text);
-    if ('vibrate' in navigator) navigator.vibrate([16]);
+    if ('vibrate' in navigator) navigator.vibrate([18]);
     sound.playCopyChime();
 
     if (btn) {
@@ -351,49 +383,102 @@ async function copyText(text, btn) {
 }
 
 /* ==========================================================================
+   Filter Switcher
+   ========================================================================== */
+function setActiveFilter(filterKey) {
+  currentFilter = filterKey;
+  sound.playPop();
+
+  // Desktop sidebar sync
+  navItems.forEach((i) => {
+    i.classList.toggle('active', i.dataset.filter === filterKey);
+  });
+
+  // Mobile chips sync
+  mobileChips.forEach((c) => {
+    c.classList.toggle('active', c.dataset.filter === filterKey);
+  });
+
+  renderClips();
+}
+
+/* ==========================================================================
    Event Bindings
    ========================================================================== */
 function bindEvents() {
-  // Input typing in compose panel
-  mainInput.addEventListener('input', () => {
-    updateComposeBadge(mainInput.value);
-  });
-
-  mainInput.addEventListener('keydown', (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-      e.preventDefault();
-      submitComposeInput();
-    }
-  });
-
-  btnSubmit.addEventListener('click', submitComposeInput);
-
-  // Paste from system clipboard button
-  btnPasteSys.addEventListener('click', async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      if (text && text.trim()) {
-        mainInput.value = text;
-        updateComposeBadge(text);
-        mainInput.focus();
-        showToast('Pasted from system clipboard!', 'info');
-      } else {
-        showToast('System clipboard is empty', 'info');
+  // Desktop Compose
+  if (mainInput) {
+    mainInput.addEventListener('input', () => updateComposeBadge(mainInput.value));
+    mainInput.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        submitDesktopCompose();
       }
-    } catch (e) {
-      mainInput.focus();
-      showToast('Press ⌘V to paste manually', 'info');
-    }
-  });
+    });
+  }
 
-  // Search input in main toolbar
+  if (btnSubmit) {
+    btnSubmit.addEventListener('click', submitDesktopCompose);
+  }
+
+  if (btnPasteSys) {
+    btnPasteSys.addEventListener('click', async () => {
+      await pasteIntoInput(mainInput);
+    });
+  }
+
+  // Mobile FAB & Compose Modal
+  if (btnMobileFab) {
+    btnMobileFab.addEventListener('click', openMobileCompose);
+  }
+  if (btnEmptyAdd) {
+    btnEmptyAdd.addEventListener('click', openMobileCompose);
+  }
+  if (btnCloseCompose) {
+    btnCloseCompose.addEventListener('click', closeMobileCompose);
+  }
+
+  if (modalClipInput) {
+    modalClipInput.addEventListener('input', () => updateComposeBadge(modalClipInput.value));
+  }
+
+  if (btnModalSubmit) {
+    btnModalSubmit.addEventListener('click', submitMobileCompose);
+  }
+
+  if (btnModalPaste) {
+    btnModalPaste.addEventListener('click', async () => {
+      await pasteIntoInput(modalClipInput);
+    });
+  }
+
+  // Mobile Toolbar Quick Paste
+  if (btnMobQuickPaste) {
+    btnMobQuickPaste.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text && text.trim()) {
+          const type = detectContentType(text.trim());
+          await syncService.addClip({
+            content: text.trim(),
+            type,
+            device: getDeviceLabel()
+          });
+          sound.playSyncTone();
+          showToast('Pasted & Synced! ⚡', 'success');
+        } else {
+          showToast('System clipboard is empty', 'info');
+        }
+      } catch (e) {
+        openMobileCompose();
+      }
+    });
+  }
+
+  // Search
   searchInput.addEventListener('input', () => {
     searchQuery = searchInput.value.trim();
-    if (searchQuery.length > 0) {
-      btnClearSearch.classList.remove('hidden');
-    } else {
-      btnClearSearch.classList.add('hidden');
-    }
+    btnClearSearch.classList.toggle('hidden', searchQuery.length === 0);
     renderClips();
   });
 
@@ -405,15 +490,14 @@ function bindEvents() {
     searchInput.focus();
   });
 
-  // Navigation Filter items
+  // Desktop Navigation Filters
   navItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      sound.playPop();
-      navItems.forEach((i) => i.classList.remove('active'));
-      item.classList.add('active');
-      currentFilter = item.dataset.filter;
-      renderClips();
-    });
+    item.addEventListener('click', () => setActiveFilter(item.dataset.filter));
+  });
+
+  // Mobile Filter Chips
+  mobileChips.forEach((chip) => {
+    chip.addEventListener('click', () => setActiveFilter(chip.dataset.filter));
   });
 
   // Export
@@ -436,25 +520,25 @@ function bindEvents() {
     showToast('Cleared unpinned clips', 'info');
   });
 
-  // Load sample data button
+  // Sample data button
   if (btnSample) {
     btnSample.addEventListener('click', () => {
       sound.playPop();
       const samples = [
         { content: 'https://news.ycombinator.com', type: 'link', device: 'Mac' },
         { content: 'https://github.com/features/actions', type: 'link', device: 'iPhone' },
-        { content: 'function syncClipboard() {\n  return "Zero empty spaces, full-width responsive dashboard!";\n}', type: 'code', device: 'Mac' },
-        { content: 'Meeting notes: Cross-device virtual clipboard testing on MacBook, iPhone, and Android.', type: 'text', device: 'Android' }
+        { content: 'function syncVirtualClipboard() {\n  return "Responsive across MacBook, iPhone & Android!";\n}', type: 'code', device: 'Mac' },
+        { content: 'Meeting notes: Mobile PWA with Web Share Target and instant offline-first sync.', type: 'text', device: 'Android' }
       ];
       samples.forEach((s) => syncService.addClip(s));
       showToast('Loaded sample clips!', 'success');
     });
   }
 
-  // Modals & Room
+  // Modals: Room & Pair
   btnRoom.addEventListener('click', openPairModal);
   btnPair.addEventListener('click', openPairModal);
-  btnSidebarPair.addEventListener('click', openPairModal);
+  if (btnSidebarPair) btnSidebarPair.addEventListener('click', openPairModal);
   btnClosePair.addEventListener('click', () => modalPair.classList.add('hidden'));
 
   btnCopyLink.addEventListener('click', () => {
@@ -481,6 +565,7 @@ function bindEvents() {
     showToast(`New Room: ${code}`, 'success');
   });
 
+  // Settings
   btnSettings.addEventListener('click', () => {
     sound.playPop();
     modalSettings.classList.remove('hidden');
@@ -521,33 +606,50 @@ function bindEvents() {
 
   // Global Keyboard shortcuts
   window.addEventListener('keydown', (e) => {
-    // Cmd/Ctrl + K or /: Focus search
-    if (((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') || (e.key === '/' && document.activeElement !== mainInput && document.activeElement !== searchInput)) {
+    if (((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') || (e.key === '/' && document.activeElement !== mainInput && document.activeElement !== modalClipInput && document.activeElement !== searchInput)) {
       e.preventDefault();
       searchInput.focus();
     }
-    // Escape: Close modals
     if (e.key === 'Escape') {
+      closeMobileCompose();
       modalPair.classList.add('hidden');
       modalSettings.classList.add('hidden');
     }
   });
 
-  // Close modals on outside click
-  [modalPair, modalSettings].forEach((m) => {
-    m.addEventListener('click', (e) => {
-      if (e.target === m) m.classList.add('hidden');
-    });
+  // Backdrop click close
+  [modalCompose, modalPair, modalSettings].forEach((m) => {
+    if (m) {
+      m.addEventListener('click', (e) => {
+        if (e.target === m) m.classList.add('hidden');
+      });
+    }
   });
 }
 
-function submitComposeInput() {
+async function pasteIntoInput(targetEl) {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text && text.trim()) {
+      targetEl.value = text;
+      updateComposeBadge(text);
+      targetEl.focus();
+      showToast('Pasted from system clipboard!', 'info');
+    } else {
+      showToast('System clipboard is empty', 'info');
+    }
+  } catch (e) {
+    targetEl.focus();
+    showToast('Paste manually (permissions)', 'info');
+  }
+}
+
+function submitDesktopCompose() {
   const val = mainInput.value.trim();
   if (!val) {
     mainInput.focus();
     return;
   }
-
   const type = detectContentType(val);
   syncService.addClip({
     content: val,
@@ -562,9 +664,40 @@ function submitComposeInput() {
   });
 }
 
+function openMobileCompose() {
+  sound.playPop();
+  modalCompose.classList.remove('hidden');
+  modalClipInput.value = '';
+  updateComposeBadge('');
+  setTimeout(() => modalClipInput.focus(), 100);
+}
+
+function closeMobileCompose() {
+  modalCompose.classList.add('hidden');
+}
+
+function submitMobileCompose() {
+  const val = modalClipInput.value.trim();
+  if (!val) {
+    modalClipInput.focus();
+    return;
+  }
+  const type = detectContentType(val);
+  syncService.addClip({
+    content: val,
+    type,
+    device: getDeviceLabel()
+  }).then(() => {
+    sound.playSyncTone();
+    closeMobileCompose();
+    renderClips();
+    showToast('Synced to clipboard! ⚡', 'success');
+  });
+}
+
 function updateRoomUI() {
   displayRoomId.textContent = syncService.roomId;
-  sidebarRoomId.textContent = syncService.roomId;
+  if (sidebarRoomId) sidebarRoomId.textContent = syncService.roomId;
   pairRoomInput.value = syncService.roomId;
   statusDot.className = syncService.isFirebaseConnected ? 'pulse-dot online' : 'pulse-dot';
 }

@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>ClipSync — Virtual Clipboard Dashboard</title>
+  <title>ClipSync — Virtual Clipboard</title>
   
   <!-- SEO & PWA Meta -->
-  <meta name="description" content="Lightning-fast virtual clipboard manager for Mac, iPhone, and Android.">
-  <meta name="theme-color" content="#0C0D10">
+  <meta name="description" content="Lightning-fast virtual clipboard manager. Sync text, links, and code snippets across your MacBook, iPhone, and Android.">
+  <meta name="theme-color" content="#0B0D11">
   <meta name="color-scheme" content="dark">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ClipSync">
+  <meta name="application-name" content="ClipSync">
 
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -22,34 +24,34 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <script type="module" crossorigin src="/assets/index-BmgiaV_R.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-PBQ_QqPq.css">
+  <script type="module" crossorigin src="/assets/index-D47rRWq5.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-BDWds2_p.css">
 </head>
 <body>
   <div class="dashboard-container">
 
-    <!-- Top Full-Width Navigation Bar -->
+    <!-- Top Navigation Bar -->
     <header class="dashboard-header">
       <div class="header-brand-group">
-        <div class="brand-logo">
+        <div class="brand-logo" id="btn-brand">
           <span class="logo-lightning">⚡</span>
           <span class="brand-title">ClipSync</span>
         </div>
 
-        <button id="btn-room" class="room-indicator-pill" title="Click to view QR code or change room">
+        <button id="btn-room" class="room-indicator-pill" title="Click to view QR code or change room" aria-label="Room Settings">
           <span class="pulse-dot online" id="status-dot"></span>
-          <span class="room-tag">Room:</span>
+          <span class="room-tag hide-xs">Room:</span>
           <span class="room-name" id="display-room-id">CLIP-....</span>
         </button>
       </div>
 
       <div class="header-actions-group">
-        <!-- Install PWA Button (Hidden unless installable) -->
-        <button id="btn-install-pwa" class="btn-pill-subtle hidden" title="Install as desktop app">
+        <!-- Install PWA Button (Shows when install prompt is available) -->
+        <button id="btn-install-pwa" class="btn-pill-subtle hidden" title="Install App">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
           </svg>
-          <span>Install App</span>
+          <span class="hide-xs">Install</span>
         </button>
 
         <button id="btn-sound" class="btn-circle" title="Toggle audio feedback" aria-label="Sound Toggle">
@@ -71,7 +73,7 @@
             <rect x="14" y="14" width="7" height="7"></rect>
             <rect x="3" y="14" width="7" height="7"></rect>
           </svg>
-          <span>Pair Device (QR)</span>
+          <span class="hide-mobile">Pair Device</span>
         </button>
 
         <button id="btn-settings" class="btn-circle" title="Cloud Settings" aria-label="Settings">
@@ -83,11 +85,22 @@
       </div>
     </header>
 
+    <!-- Mobile-Only Quick Filter Tabs Strip (Horizontal scroll on phones) -->
+    <div class="mobile-filter-strip show-mobile-only">
+      <nav class="mobile-filter-scroller" role="tablist">
+        <button class="mobile-chip active" data-filter="all">All <span class="chip-num" id="mob-count-all">0</span></button>
+        <button class="mobile-chip" data-filter="link">🔗 Links <span class="chip-num" id="mob-count-link">0</span></button>
+        <button class="mobile-chip" data-filter="text">📝 Notes <span class="chip-num" id="mob-count-text">0</span></button>
+        <button class="mobile-chip" data-filter="code">💻 Code <span class="chip-num" id="mob-count-code">0</span></button>
+        <button class="mobile-chip" data-filter="pinned">⭐ Pinned <span class="chip-num" id="mob-count-pinned">0</span></button>
+      </nav>
+    </div>
+
     <!-- Main Two-Column Dashboard Workspace -->
     <div class="dashboard-workspace">
 
-      <!-- LEFT SIDEBAR: Compose, Filters, Room Info -->
-      <aside class="dashboard-sidebar">
+      <!-- LEFT SIDEBAR: Desktop / Tablet Compose & Filters -->
+      <aside class="dashboard-sidebar hide-mobile">
         <!-- Quick Add Panel -->
         <div class="sidebar-card compose-panel">
           <div class="panel-header">
@@ -185,7 +198,15 @@
           </div>
 
           <div class="toolbar-actions">
-            <button id="btn-export-clips" class="btn-pill-subtle" title="Export JSON history">
+            <!-- Mobile Quick Paste (visible on mobile only) -->
+            <button id="btn-mob-quick-paste" class="btn-pill-subtle show-mobile-only" title="Paste from clipboard">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+              <span>Paste</span>
+            </button>
+
+            <button id="btn-export-clips" class="btn-pill-subtle hide-xs" title="Export JSON history">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -199,7 +220,7 @@
                 <polyline points="3 6 5 6 21 6"></polyline>
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
               </svg>
-              <span>Clear</span>
+              <span class="hide-xs">Clear</span>
             </button>
           </div>
         </div>
@@ -215,8 +236,11 @@
           <div class="stream-empty hidden" id="empty-state">
             <div class="empty-icon-wrap">📋</div>
             <p class="empty-title">Virtual clipboard is empty</p>
-            <p class="empty-hint">Type or paste something on the left, or share a link directly from your phone.</p>
-            <button id="btn-sample" class="btn-primary-sync">Load Sample Clips</button>
+            <p class="empty-hint">Type or paste something to sync across your MacBook, iPhone, and Android.</p>
+            <div class="empty-btn-row">
+              <button id="btn-empty-add" class="btn-primary-sync show-mobile-only">Add New Clip</button>
+              <button id="btn-sample" class="btn-pill-subtle">Load Sample Clips</button>
+            </div>
           </div>
 
           <!-- The Responsive Cards Grid -->
@@ -226,8 +250,50 @@
 
     </div>
 
+    <!-- Mobile Floating Action Button (FAB) for 1-Thumb Quick Add -->
+    <button id="btn-mobile-fab" class="mobile-fab show-mobile-only" aria-label="Add New Clip" title="Add New Clip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+    </button>
+
     <!-- Toast Notifications Stack -->
     <div id="toast-container" class="toast-wrap" aria-live="polite"></div>
+
+    <!-- Mobile / Quick Compose Modal -->
+    <div id="modal-compose" class="modal-dim hidden" role="dialog" aria-modal="true">
+      <div class="modal-card modal-sheet">
+        <div class="modal-top">
+          <div class="modal-header-left">
+            <h3>Add New Clip</h3>
+            <span class="type-badge" id="modal-type-badge">📝 Text</span>
+          </div>
+          <button class="btn-close" id="btn-close-compose">✕</button>
+        </div>
+        <div class="modal-inner">
+          <div class="compose-area">
+            <textarea
+              id="modal-clip-input"
+              class="compose-input"
+              placeholder="Paste or type link, text, code..."
+              rows="5"
+            ></textarea>
+          </div>
+          <div class="compose-actions-row">
+            <button id="btn-modal-paste" class="btn-subtle-tool">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+              <span>Paste from System</span>
+            </button>
+            <button id="btn-modal-submit" class="btn-primary-sync">
+              <span>Sync to Devices ⚡</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Modal: Pair Device / QR Code -->
     <div id="modal-pair" class="modal-dim hidden" role="dialog" aria-modal="true">
