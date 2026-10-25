@@ -19,10 +19,11 @@ const categoryTitles = {
 };
 
 // Sidebar Elements
+const appLayout = document.querySelector('.app-layout');
 const appSidebar = document.getElementById('app-sidebar');
 const sidebarBackdrop = document.getElementById('sidebar-backdrop');
 const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
-const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+const btnCollapseSidebar = document.getElementById('btn-collapse-sidebar');
 const navItems = document.querySelectorAll('.nav-item');
 const activeCategoryTitle = document.getElementById('active-category-title');
 const btnExportClips = document.getElementById('btn-export-clips');
@@ -90,6 +91,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initServiceWorker();
   initSoundUI();
   initViewMode();
+  initSidebarState();
   updateRoomUI();
   handleWebShareTarget();
   bindEvents();
@@ -446,8 +448,47 @@ function setActiveFilter(filterKey) {
 }
 
 /* ==========================================================================
-   Sidebar Drawer Toggle (Mobile)
+   Sidebar Expand & Collapse Controls (Desktop & Mobile)
    ========================================================================== */
+function isMobileView() {
+  return window.innerWidth <= 860;
+}
+
+function initSidebarState() {
+  const isCollapsed = localStorage.getItem('clipsync_sidebar_collapsed') === 'true';
+  if (!isMobileView() && isCollapsed && appLayout) {
+    appLayout.classList.add('sidebar-collapsed');
+    if (btnToggleSidebar) {
+      btnToggleSidebar.classList.add('collapsed');
+      btnToggleSidebar.title = 'Expand Sidebar (⌘B)';
+    }
+  }
+}
+
+function toggleSidebar() {
+  sound.playPop();
+  if (isMobileView()) {
+    // Mobile Drawer mode
+    if (appSidebar && appSidebar.classList.contains('open')) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  } else {
+    // Desktop Expand / Collapse mode
+    if (appLayout) {
+      const willCollapse = !appLayout.classList.contains('sidebar-collapsed');
+      appLayout.classList.toggle('sidebar-collapsed', willCollapse);
+      if (btnToggleSidebar) {
+        btnToggleSidebar.classList.toggle('collapsed', willCollapse);
+        btnToggleSidebar.title = willCollapse ? 'Expand Sidebar (⌘B)' : 'Hide Sidebar (⌘B)';
+      }
+      localStorage.setItem('clipsync_sidebar_collapsed', willCollapse ? 'true' : 'false');
+      showToast(willCollapse ? 'Sidebar hidden (⌘B)' : 'Sidebar expanded (⌘B)', 'info');
+    }
+  }
+}
+
 function openSidebar() {
   if (appSidebar) appSidebar.classList.add('open');
   if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
@@ -462,10 +503,28 @@ function closeSidebar() {
    Event Bindings
    ========================================================================== */
 function bindEvents() {
-  // Mobile Sidebar Toggle
-  if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', openSidebar);
-  if (btnCloseSidebar) btnCloseSidebar.addEventListener('click', closeSidebar);
+  // Sidebar Expand / Hide Toggles
+  if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', toggleSidebar);
+  if (btnCollapseSidebar) btnCollapseSidebar.addEventListener('click', toggleSidebar);
   if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
+
+  // Keyboard shortcut: ⌘+B or Ctrl+B to toggle sidebar
+  window.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+      e.preventDefault();
+      toggleSidebar();
+    }
+  });
+
+  // Handle window resize between mobile and desktop
+  window.addEventListener('resize', () => {
+    if (isMobileView()) {
+      if (appLayout) appLayout.classList.remove('sidebar-collapsed');
+    } else {
+      initSidebarState();
+      closeSidebar();
+    }
+  });
 
   // Category navigation
   navItems.forEach((item) => {
