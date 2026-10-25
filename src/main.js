@@ -7,67 +7,49 @@ let allClips = [];
 let currentFilter = 'all';
 let searchQuery = '';
 let deferredPrompt = null;
+let currentViewMode = localStorage.getItem('clipsync_view_mode') || 'grid';
 
-// Desktop DOM Elements
+// DOM Elements
 const mainInput = document.getElementById('main-input');
 const btnSubmit = document.getElementById('btn-submit');
 const btnPasteSys = document.getElementById('btn-paste-sys');
-const sidebarTypeBadge = document.getElementById('sidebar-type-badge');
+const composeTypeTag = document.getElementById('compose-type-tag');
 
-// Mobile DOM Elements
-const btnMobileFab = document.getElementById('btn-mobile-fab');
-const btnMobQuickPaste = document.getElementById('btn-mob-quick-paste');
-const modalCompose = document.getElementById('modal-compose');
-const btnCloseCompose = document.getElementById('btn-close-compose');
-const modalClipInput = document.getElementById('modal-clip-input');
-const btnModalSubmit = document.getElementById('btn-modal-submit');
-const btnModalPaste = document.getElementById('btn-modal-paste');
-const modalTypeBadge = document.getElementById('modal-type-badge');
-const btnEmptyAdd = document.getElementById('btn-empty-add');
-
-// Search & Toolbar
+// Controls & Search
 const searchInput = document.getElementById('search-input');
 const btnClearSearch = document.getElementById('btn-clear-search');
-const btnExportClips = document.getElementById('btn-export-clips');
 const btnClearHistory = document.getElementById('btn-clear-history');
+const filterPills = document.querySelectorAll('.pill-btn');
+const btnViewGrid = document.getElementById('btn-view-grid');
+const btnViewList = document.getElementById('btn-view-list');
 
-// Feed & State
-const clipsList = document.getElementById('clips-list');
-const emptyState = document.getElementById('empty-state');
-const loadingState = document.getElementById('loading-state');
-const toastContainer = document.getElementById('toast-container');
-
-// Desktop Filters
-const navItems = document.querySelectorAll('.nav-item');
+// Counts
 const countAll = document.getElementById('count-all');
 const countLink = document.getElementById('count-link');
 const countText = document.getElementById('count-text');
 const countCode = document.getElementById('count-code');
 const countPinned = document.getElementById('count-pinned');
 
-// Mobile Filter Chips
-const mobileChips = document.querySelectorAll('.mobile-chip');
-const mobCountAll = document.getElementById('mob-count-all');
-const mobCountLink = document.getElementById('mob-count-link');
-const mobCountText = document.getElementById('mob-count-text');
-const mobCountCode = document.getElementById('mob-count-code');
-const mobCountPinned = document.getElementById('mob-count-pinned');
+// Stream & States
+const clipsList = document.getElementById('clips-list');
+const emptyState = document.getElementById('empty-state');
+const loadingState = document.getElementById('loading-state');
+const btnSample = document.getElementById('btn-sample');
+const btnMobileFab = document.getElementById('btn-mobile-fab');
+const toastContainer = document.getElementById('toast-container');
 
-// Header & Room Info
+// Header & Navigation
 const displayRoomId = document.getElementById('display-room-id');
-const sidebarRoomId = document.getElementById('sidebar-room-id');
 const statusDot = document.getElementById('status-dot');
 const btnRoom = document.getElementById('btn-room');
 const btnPair = document.getElementById('btn-pair');
-const btnSidebarPair = document.getElementById('btn-sidebar-pair');
 const btnSettings = document.getElementById('btn-settings');
 const btnSound = document.getElementById('btn-sound');
 const soundIconOn = document.getElementById('sound-icon-on');
 const soundIconOff = document.getElementById('sound-icon-off');
 const btnInstallPwa = document.getElementById('btn-install-pwa');
-const btnSample = document.getElementById('btn-sample');
 
-// Modals: Pair
+// Modal: Pair Device
 const modalPair = document.getElementById('modal-pair');
 const btnClosePair = document.getElementById('btn-close-pair');
 const qrCanvasHolder = document.getElementById('qr-canvas-holder');
@@ -77,18 +59,12 @@ const inputCustomRoom = document.getElementById('input-custom-room');
 const btnSwitchRoom = document.getElementById('btn-switch-room');
 const btnNewRoom = document.getElementById('btn-new-room');
 
-// Modals: Settings
+// Modal: Settings
 const modalSettings = document.getElementById('modal-settings');
 const btnCloseSettings = document.getElementById('btn-close-settings');
 const firebaseJsonInput = document.getElementById('firebase-json-input');
 const btnSaveFirebase = document.getElementById('btn-save-firebase');
 const btnResetFirebase = document.getElementById('btn-reset-firebase');
-
-// Modals: Share Target Guide
-const btnShareGuide = document.getElementById('btn-share-guide');
-const modalShareGuide = document.getElementById('modal-share-guide');
-const btnCloseShareGuide = document.getElementById('btn-close-share-guide');
-const btnTestNativeShare = document.getElementById('btn-test-native-share');
 
 /* ==========================================================================
    Initialization
@@ -96,6 +72,7 @@ const btnTestNativeShare = document.getElementById('btn-test-native-share');
 window.addEventListener('DOMContentLoaded', () => {
   initServiceWorker();
   initSoundUI();
+  initViewMode();
   updateRoomUI();
   handleWebShareTarget();
   bindEvents();
@@ -155,7 +132,7 @@ function initServiceWorker() {
 }
 
 /* ==========================================================================
-   Web Share Target (Share menu on mobile)
+   Web Share Target (Interception from OS Share Menu)
    ========================================================================== */
 function handleWebShareTarget() {
   const params = new URLSearchParams(window.location.search);
@@ -194,23 +171,65 @@ function detectContentType(str) {
   if (!str) return 'text';
   const trimmed = str.trim();
   if (/^(https?:\/\/[^\s]+)$/i.test(trimmed)) return 'link';
-  if (trimmed.includes('function') || trimmed.includes('const ') || trimmed.includes('class ') || (trimmed.includes('{') && trimmed.includes('}')) || (trimmed.includes('<') && trimmed.includes('>'))) {
+  if (
+    trimmed.includes('function') ||
+    trimmed.includes('const ') ||
+    trimmed.includes('class ') ||
+    trimmed.includes('import ') ||
+    trimmed.includes('export ') ||
+    (trimmed.includes('{') && trimmed.includes('}')) ||
+    (trimmed.includes('<') && trimmed.includes('>'))
+  ) {
     return 'code';
   }
   return 'text';
 }
 
 function updateComposeBadge(val) {
+  if (!composeTypeTag) return;
   const type = detectContentType(val);
   const label = type === 'link' ? '🔗 Link' : (type === 'code' ? '💻 Code' : '📝 Text');
-  if (sidebarTypeBadge) sidebarTypeBadge.textContent = label;
-  if (modalTypeBadge) modalTypeBadge.textContent = label;
+  composeTypeTag.textContent = label;
 }
 
 /* ==========================================================================
-   Rendering Clips Grid
+   View Mode (Grid vs List)
+   ========================================================================== */
+function initViewMode() {
+  applyViewMode(currentViewMode);
+
+  if (btnViewGrid) {
+    btnViewGrid.addEventListener('click', () => applyViewMode('grid'));
+  }
+  if (btnViewList) {
+    btnViewList.addEventListener('click', () => applyViewMode('list'));
+  }
+}
+
+function applyViewMode(mode) {
+  currentViewMode = mode;
+  localStorage.setItem('clipsync_view_mode', mode);
+
+  if (clipsList) {
+    if (mode === 'grid') {
+      clipsList.classList.add('view-grid');
+      clipsList.classList.remove('view-list');
+    } else {
+      clipsList.classList.add('view-list');
+      clipsList.classList.remove('view-grid');
+    }
+  }
+
+  if (btnViewGrid) btnViewGrid.classList.toggle('active', mode === 'grid');
+  if (btnViewList) btnViewList.classList.toggle('active', mode === 'list');
+}
+
+/* ==========================================================================
+   Rendering Clips
    ========================================================================== */
 function renderClips() {
+  if (!clipsList) return;
+
   let list = [...allClips];
 
   // Search filter
@@ -231,10 +250,10 @@ function renderClips() {
 
   if (list.length === 0) {
     clipsList.innerHTML = '';
-    emptyState.classList.remove('hidden');
+    if (emptyState) emptyState.classList.remove('hidden');
     return;
   } else {
-    emptyState.classList.add('hidden');
+    if (emptyState) emptyState.classList.add('hidden');
   }
 
   const frag = document.createDocumentFragment();
@@ -317,23 +336,33 @@ function renderClips() {
       </div>
     `;
 
-    // Bind item listeners
-    card.querySelector('.btn-pin').addEventListener('click', () => {
-      sound.playPop();
-      syncService.togglePin(clip.id, clip.pinned);
-    });
+    // Pin
+    const btnPin = card.querySelector('.btn-pin');
+    if (btnPin) {
+      btnPin.addEventListener('click', () => {
+        sound.playPop();
+        syncService.togglePin(clip.id, clip.pinned);
+      });
+    }
 
-    card.querySelector('.btn-delete').addEventListener('click', () => {
-      sound.playDelete();
-      card.style.opacity = '0';
-      card.style.transform = 'scale(0.95)';
-      setTimeout(() => syncService.deleteClip(clip.id), 130);
-    });
+    // Delete
+    const btnDelete = card.querySelector('.btn-delete');
+    if (btnDelete) {
+      btnDelete.addEventListener('click', () => {
+        sound.playDelete();
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+        setTimeout(() => syncService.deleteClip(clip.id), 120);
+      });
+    }
 
+    // Copy
     const btnCopy = card.querySelector('.btn-copy-card');
-    btnCopy.addEventListener('click', () => {
-      copyText(clip.content, btnCopy);
-    });
+    if (btnCopy) {
+      btnCopy.addEventListener('click', () => {
+        copyText(clip.content, btnCopy);
+      });
+    }
 
     frag.appendChild(card);
   });
@@ -349,19 +378,11 @@ function updateCounts() {
   const code = allClips.filter((c) => c.type === 'code').length;
   const pinned = allClips.filter((c) => c.pinned).length;
 
-  // Desktop
   if (countAll) countAll.textContent = all;
   if (countLink) countLink.textContent = link;
   if (countText) countText.textContent = text;
   if (countCode) countCode.textContent = code;
   if (countPinned) countPinned.textContent = pinned;
-
-  // Mobile
-  if (mobCountAll) mobCountAll.textContent = all;
-  if (mobCountLink) mobCountLink.textContent = link;
-  if (mobCountText) mobCountText.textContent = text;
-  if (mobCountCode) mobCountCode.textContent = code;
-  if (mobCountPinned) mobCountPinned.textContent = pinned;
 }
 
 /* ==========================================================================
@@ -380,7 +401,7 @@ async function copyText(text, btn) {
       setTimeout(() => {
         btn.classList.remove('copied');
         btn.innerHTML = old;
-      }, 1500);
+      }, 1400);
     }
     showToast('Copied to clipboard! 📋', 'success');
   } catch (e) {
@@ -395,14 +416,8 @@ function setActiveFilter(filterKey) {
   currentFilter = filterKey;
   sound.playPop();
 
-  // Desktop sidebar sync
-  navItems.forEach((i) => {
-    i.classList.toggle('active', i.dataset.filter === filterKey);
-  });
-
-  // Mobile chips sync
-  mobileChips.forEach((c) => {
-    c.classList.toggle('active', c.dataset.filter === filterKey);
+  filterPills.forEach((p) => {
+    p.classList.toggle('active', p.dataset.filter === filterKey);
   });
 
   renderClips();
@@ -412,19 +427,19 @@ function setActiveFilter(filterKey) {
    Event Bindings
    ========================================================================== */
 function bindEvents() {
-  // Desktop Compose
+  // Compose input & submit
   if (mainInput) {
     mainInput.addEventListener('input', () => updateComposeBadge(mainInput.value));
     mainInput.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
-        submitDesktopCompose();
+        submitCompose();
       }
     });
   }
 
   if (btnSubmit) {
-    btnSubmit.addEventListener('click', submitDesktopCompose);
+    btnSubmit.addEventListener('click', submitCompose);
   }
 
   if (btnPasteSys) {
@@ -433,98 +448,40 @@ function bindEvents() {
     });
   }
 
-  // Mobile FAB & Compose Modal
-  if (btnMobileFab) {
-    btnMobileFab.addEventListener('click', openMobileCompose);
-  }
-  if (btnEmptyAdd) {
-    btnEmptyAdd.addEventListener('click', openMobileCompose);
-  }
-  if (btnCloseCompose) {
-    btnCloseCompose.addEventListener('click', closeMobileCompose);
-  }
+  // Filter Pills
+  filterPills.forEach((pill) => {
+    pill.addEventListener('click', () => setActiveFilter(pill.dataset.filter));
+  });
 
-  if (modalClipInput) {
-    modalClipInput.addEventListener('input', () => updateComposeBadge(modalClipInput.value));
-  }
-
-  if (btnModalSubmit) {
-    btnModalSubmit.addEventListener('click', submitMobileCompose);
-  }
-
-  if (btnModalPaste) {
-    btnModalPaste.addEventListener('click', async () => {
-      await pasteIntoInput(modalClipInput);
+  // Search
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      searchQuery = searchInput.value.trim();
+      if (btnClearSearch) btnClearSearch.classList.toggle('hidden', searchQuery.length === 0);
+      renderClips();
     });
   }
 
-  // Mobile Toolbar Quick Paste
-  if (btnMobQuickPaste) {
-    btnMobQuickPaste.addEventListener('click', async () => {
-      try {
-        const text = await navigator.clipboard.readText();
-        if (text && text.trim()) {
-          const type = detectContentType(text.trim());
-          await syncService.addClip({
-            content: text.trim(),
-            type,
-            device: getDeviceLabel()
-          });
-          sound.playSyncTone();
-          showToast('Pasted & Synced! ⚡', 'success');
-        } else {
-          showToast('System clipboard is empty', 'info');
-        }
-      } catch (e) {
-        openMobileCompose();
+  if (btnClearSearch) {
+    btnClearSearch.addEventListener('click', () => {
+      if (searchInput) {
+        searchInput.value = '';
+        searchQuery = '';
+        btnClearSearch.classList.add('hidden');
+        renderClips();
+        searchInput.focus();
       }
     });
   }
 
-  // Search
-  searchInput.addEventListener('input', () => {
-    searchQuery = searchInput.value.trim();
-    btnClearSearch.classList.toggle('hidden', searchQuery.length === 0);
-    renderClips();
-  });
-
-  btnClearSearch.addEventListener('click', () => {
-    searchInput.value = '';
-    searchQuery = '';
-    btnClearSearch.classList.add('hidden');
-    renderClips();
-    searchInput.focus();
-  });
-
-  // Desktop Navigation Filters
-  navItems.forEach((item) => {
-    item.addEventListener('click', () => setActiveFilter(item.dataset.filter));
-  });
-
-  // Mobile Filter Chips
-  mobileChips.forEach((chip) => {
-    chip.addEventListener('click', () => setActiveFilter(chip.dataset.filter));
-  });
-
-  // Export
-  btnExportClips.addEventListener('click', () => {
-    sound.playPop();
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(allClips, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `clipsync-${syncService.roomId}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-    showToast('Exported clipboard history JSON', 'success');
-  });
-
-  // Clear unpinned
-  btnClearHistory.addEventListener('click', () => {
-    sound.playDelete();
-    syncService.clearAll();
-    showToast('Cleared unpinned clips', 'info');
-  });
+  // Clear unpinned clips
+  if (btnClearHistory) {
+    btnClearHistory.addEventListener('click', () => {
+      sound.playDelete();
+      syncService.clearAll();
+      showToast('Cleared unpinned clips', 'info');
+    });
+  }
 
   // Sample data button
   if (btnSample) {
@@ -541,266 +498,230 @@ function bindEvents() {
     });
   }
 
+  // Mobile FAB: focus input smoothly
+  if (btnMobileFab) {
+    btnMobileFab.addEventListener('click', () => {
+      if (mainInput) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => mainInput.focus(), 250);
+      }
+    });
+  }
+
   // Modals: Room & Pair
-  btnRoom.addEventListener('click', openPairModal);
-  btnPair.addEventListener('click', openPairModal);
-  if (btnSidebarPair) btnSidebarPair.addEventListener('click', openPairModal);
-  btnClosePair.addEventListener('click', () => modalPair.classList.add('hidden'));
+  if (btnRoom) btnRoom.addEventListener('click', openPairModal);
+  if (btnPair) btnPair.addEventListener('click', openPairModal);
+  if (btnClosePair) btnClosePair.addEventListener('click', () => modalPair && modalPair.classList.add('hidden'));
 
-  btnCopyLink.addEventListener('click', () => {
-    const pairUrl = `${window.location.origin}${window.location.pathname}?room=${syncService.roomId}`;
-    copyText(pairUrl, btnCopyLink);
-  });
-
-  btnSwitchRoom.addEventListener('click', () => {
-    const val = inputCustomRoom.value.trim().toUpperCase();
-    if (val) {
-      syncService.setRoomId(val);
-      updateRoomUI();
-      renderQRCode();
-      inputCustomRoom.value = '';
-      showToast(`Joined ${val}`, 'success');
-    }
-  });
-
-  btnNewRoom.addEventListener('click', () => {
-    const code = 'CLIP-' + Math.floor(1000 + Math.random() * 9000);
-    syncService.setRoomId(code);
-    updateRoomUI();
-    renderQRCode();
-    showToast(`New Room: ${code}`, 'success');
-  });
-
-  // Settings
-  btnSettings.addEventListener('click', () => {
-    sound.playPop();
-    modalSettings.classList.remove('hidden');
-    const saved = syncService.getFirebaseConfig();
-    if (saved) firebaseJsonInput.value = JSON.stringify(saved, null, 2);
-  });
-
-  btnCloseSettings.addEventListener('click', () => modalSettings.classList.add('hidden'));
-
-  btnSaveFirebase.addEventListener('click', () => {
-    const raw = firebaseJsonInput.value.trim();
-    try {
-      const parsed = JSON.parse(raw);
-      if (parsed.apiKey) {
-        syncService.saveFirebaseConfig(parsed);
-        updateRoomUI();
-        modalSettings.classList.add('hidden');
-        showToast('Firebase connected!', 'success');
-      }
-    } catch (e) {
-      showToast('Invalid JSON format', 'error');
-    }
-  });
-
-  btnResetFirebase.addEventListener('click', () => {
-    syncService.resetToLocal();
-    firebaseJsonInput.value = '';
-    updateRoomUI();
-    modalSettings.classList.add('hidden');
-    showToast('Reset to local relay mode', 'info');
-  });
-
-  btnSound.addEventListener('click', () => {
-    const on = sound.toggle();
-    initSoundUI();
-    showToast(on ? 'Sound on 🔔' : 'Sound muted 🔕', 'info');
-  });
-
-  // Share Sheet Setup Guide Modal
-  if (btnShareGuide) {
-    btnShareGuide.addEventListener('click', () => {
-      sound.playPop();
-      modalShareGuide.classList.remove('hidden');
-    });
-  }
-
-  if (btnCloseShareGuide) {
-    btnCloseShareGuide.addEventListener('click', () => {
-      modalShareGuide.classList.add('hidden');
-    });
-  }
-
-  if (btnTestNativeShare) {
-    btnTestNativeShare.addEventListener('click', async () => {
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: 'ClipSync Share Test',
-            text: 'Testing system share sheet for ClipSync',
-            url: window.location.href
-          });
-          showToast('Share sheet opened!', 'success');
-        } catch (err) {
-          // User cancelled
-        }
-      } else {
-        showToast('Web Share API requires mobile browser or Chrome', 'info');
-      }
-    });
-  }
-
-  // Global Keyboard shortcuts
-  window.addEventListener('keydown', (e) => {
-    if (((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') || (e.key === '/' && document.activeElement !== mainInput && document.activeElement !== modalClipInput && document.activeElement !== searchInput)) {
-      e.preventDefault();
-      searchInput.focus();
-    }
-    if (e.key === 'Escape') {
-      closeMobileCompose();
-      modalPair.classList.add('hidden');
-      modalSettings.classList.add('hidden');
-      if (modalShareGuide) modalShareGuide.classList.add('hidden');
-    }
-  });
-
-  // Backdrop click close
-  [modalCompose, modalPair, modalSettings, modalShareGuide].forEach((m) => {
-    if (m) {
-      m.addEventListener('click', (e) => {
-        if (e.target === m) m.classList.add('hidden');
+  if (btnCopyLink) {
+    btnCopyLink.addEventListener('click', () => {
+      const url = `${window.location.origin}/?room=${syncService.roomId}`;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('Pair link copied! 🔗', 'success');
       });
-    }
-  });
-}
+    });
+  }
 
-async function pasteIntoInput(targetEl) {
-  try {
-    const text = await navigator.clipboard.readText();
-    if (text && text.trim()) {
-      targetEl.value = text;
-      updateComposeBadge(text);
-      targetEl.focus();
-      showToast('Pasted from system clipboard!', 'info');
-    } else {
-      showToast('System clipboard is empty', 'info');
-    }
-  } catch (e) {
-    targetEl.focus();
-    showToast('Paste manually (permissions)', 'info');
+  if (btnSwitchRoom && inputCustomRoom) {
+    btnSwitchRoom.addEventListener('click', () => {
+      const r = inputCustomRoom.value.trim().toUpperCase();
+      if (r) {
+        syncService.switchRoom(r);
+        updateRoomUI();
+        if (modalPair) modalPair.classList.add('hidden');
+        inputCustomRoom.value = '';
+        showToast(`Switched to room ${r}`, 'success');
+      }
+    });
+  }
+
+  if (btnNewRoom) {
+    btnNewRoom.addEventListener('click', () => {
+      const r = 'CLIP-' + Math.floor(1000 + Math.random() * 9000);
+      syncService.switchRoom(r);
+      updateRoomUI();
+      openPairModal();
+      showToast(`Created new room ${r}`, 'success');
+    });
+  }
+
+  // Modals: Settings
+  if (btnSettings) {
+    btnSettings.addEventListener('click', () => {
+      if (modalSettings) {
+        if (firebaseJsonInput) {
+          const cfg = localStorage.getItem('clipsync_firebase_custom_config');
+          firebaseJsonInput.value = cfg || '';
+        }
+        modalSettings.classList.remove('hidden');
+      }
+    });
+  }
+
+  if (btnCloseSettings && modalSettings) {
+    btnCloseSettings.addEventListener('click', () => modalSettings.classList.add('hidden'));
+  }
+
+  if (btnSaveFirebase) {
+    btnSaveFirebase.addEventListener('click', () => {
+      const val = firebaseJsonInput.value.trim();
+      if (val) {
+        try {
+          const parsed = JSON.parse(val);
+          syncService.updateFirebaseConfig(parsed);
+          updateRoomUI();
+          if (modalSettings) modalSettings.classList.add('hidden');
+          showToast('Firebase cloud connected! ☁️', 'success');
+        } catch (e) {
+          showToast('Invalid JSON config', 'error');
+        }
+      }
+    });
+  }
+
+  if (btnResetFirebase) {
+    btnResetFirebase.addEventListener('click', () => {
+      syncService.resetToLocal();
+      updateRoomUI();
+      if (firebaseJsonInput) firebaseJsonInput.value = '';
+      if (modalSettings) modalSettings.classList.add('hidden');
+      showToast('Switched to local offline mode', 'info');
+    });
+  }
+
+  // Backdrop modal dismiss
+  window.addEventListener('click', (e) => {
+    if (modalPair && e.target === modalPair) modalPair.classList.add('hidden');
+    if (modalSettings && e.target === modalSettings) modalSettings.classList.add('hidden');
+  });
+
+  // Sound toggle
+  if (btnSound) {
+    btnSound.addEventListener('click', () => {
+      const enabled = sound.toggle();
+      updateSoundIcons(enabled);
+      showToast(enabled ? 'Sound enabled 🔔' : 'Sound muted 🔕', 'info');
+    });
   }
 }
 
-function submitDesktopCompose() {
-  const val = mainInput.value.trim();
-  if (!val) {
+/* ==========================================================================
+   Compose & Submission
+   ========================================================================== */
+async function submitCompose() {
+  if (!mainInput) return;
+  const content = mainInput.value.trim();
+  if (!content) {
     mainInput.focus();
     return;
   }
-  const type = detectContentType(val);
-  syncService.addClip({
-    content: val,
+
+  const type = detectContentType(content);
+  await syncService.addClip({
+    content,
     type,
     device: getDeviceLabel()
-  }).then(() => {
-    sound.playSyncTone();
-    mainInput.value = '';
-    updateComposeBadge('');
-    renderClips();
-    showToast('Synced to clipboard! ⚡', 'success');
   });
-}
 
-function openMobileCompose() {
-  sound.playPop();
-  modalCompose.classList.remove('hidden');
-  modalClipInput.value = '';
+  sound.playSyncTone();
+  mainInput.value = '';
   updateComposeBadge('');
-  setTimeout(() => modalClipInput.focus(), 100);
+  showToast('Synced to devices! ⚡', 'success');
 }
 
-function closeMobileCompose() {
-  modalCompose.classList.add('hidden');
-}
-
-function submitMobileCompose() {
-  const val = modalClipInput.value.trim();
-  if (!val) {
-    modalClipInput.focus();
-    return;
+async function pasteIntoInput(textarea) {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text && textarea) {
+      textarea.value = text;
+      updateComposeBadge(text);
+      textarea.focus();
+      showToast('Pasted from clipboard', 'info');
+    }
+  } catch (err) {
+    if (textarea) textarea.focus();
+    showToast('Please press ⌘+V / Ctrl+V to paste', 'info');
   }
-  const type = detectContentType(val);
-  syncService.addClip({
-    content: val,
-    type,
-    device: getDeviceLabel()
-  }).then(() => {
-    sound.playSyncTone();
-    closeMobileCompose();
-    renderClips();
-    showToast('Synced to clipboard! ⚡', 'success');
-  });
+}
+
+/* ==========================================================================
+   Modals & Room UI
+   ========================================================================== */
+function openPairModal() {
+  if (!modalPair) return;
+  modalPair.classList.remove('hidden');
+  if (pairRoomInput) pairRoomInput.value = syncService.roomId;
+
+  if (qrCanvasHolder) {
+    qrCanvasHolder.innerHTML = '';
+    const pairUrl = `${window.location.origin}/?room=${syncService.roomId}`;
+    QRCode.toCanvas(pairUrl, {
+      width: 176,
+      margin: 1,
+      color: { dark: '#0E1117', light: '#FFFFFF' }
+    }, (err, canvas) => {
+      if (!err && canvas) {
+        qrCanvasHolder.appendChild(canvas);
+      }
+    });
+  }
 }
 
 function updateRoomUI() {
-  displayRoomId.textContent = syncService.roomId;
-  if (sidebarRoomId) sidebarRoomId.textContent = syncService.roomId;
-  pairRoomInput.value = syncService.roomId;
-  statusDot.className = syncService.isFirebaseConnected ? 'pulse-dot online' : 'pulse-dot';
-}
-
-function openPairModal() {
-  sound.playPop();
-  modalPair.classList.remove('hidden');
-  renderQRCode();
-}
-
-function renderQRCode() {
-  const pairUrl = `${window.location.origin}${window.location.pathname}?room=${syncService.roomId}`;
-  QRCode.toCanvas(pairUrl, {
-    width: 140,
-    margin: 1,
-    color: { dark: '#0B0D11', light: '#FFFFFF' }
-  }, (err, canvas) => {
-    if (!err && canvas) {
-      qrCanvasHolder.innerHTML = '';
-      qrCanvasHolder.appendChild(canvas);
-    }
-  });
-}
-
-function initSoundUI() {
-  if (sound.enabled) {
-    soundIconOn.classList.remove('hidden');
-    soundIconOff.classList.add('hidden');
-  } else {
-    soundIconOn.classList.add('hidden');
-    soundIconOff.classList.remove('hidden');
+  if (displayRoomId) displayRoomId.textContent = syncService.roomId;
+  if (statusDot) {
+    statusDot.className = `status-dot ${syncService.isCloudActive ? 'online' : 'local'}`;
+    statusDot.title = syncService.isCloudActive ? 'Connected to Firebase Realtime Cloud' : 'Local / LocalStorage active';
   }
 }
 
+function initSoundUI() {
+  updateSoundIcons(sound.enabled);
+}
+
+function updateSoundIcons(enabled) {
+  if (soundIconOn && soundIconOff) {
+    soundIconOn.classList.toggle('hidden', !enabled);
+    soundIconOff.classList.toggle('hidden', enabled);
+  }
+}
+
+/* ==========================================================================
+   Toasts & Helpers
+   ========================================================================== */
 function showToast(msg, type = 'info') {
-  const t = document.createElement('div');
-  t.className = `toast toast-${type}`;
-  t.textContent = msg;
-  toastContainer.appendChild(t);
+  if (!toastContainer) return;
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = msg;
+  toastContainer.appendChild(toast);
+
   setTimeout(() => {
-    t.style.opacity = '0';
-    setTimeout(() => t.remove(), 200);
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(8px)';
+    setTimeout(() => toast.remove(), 250);
   }, 2200);
+}
+
+function formatTimeAgo(timestamp) {
+  if (!timestamp) return 'Just now';
+  const diff = Date.now() - timestamp;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
 }
 
 function escapeHtml(str) {
   if (!str) return '';
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
-function linkifyText(text) {
-  return text.replace(/(https?:\/\/[^\s]+)/g, (url) => {
-    return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: underline;">${url}</a>`;
-  });
-}
-
-function formatTimeAgo(ts) {
-  if (!ts) return 'Just now';
-  const s = Math.floor((Date.now() - ts) / 1000);
-  if (s < 60) return 'Just now';
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h / 24)}d ago`;
+function linkifyText(str) {
+  const urlRegex = /(https?:\/\/[^\s<]+)/g;
+  return str.replace(urlRegex, (url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
 }
