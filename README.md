@@ -1,94 +1,154 @@
-# ⚡ ClipSync — Virtual Clipboard Manager (PWA)
+# ClipSync — Virtual Clipboard Manager
 
-**ClipSync** হলো একটি আল্ট্রা-লাইটওয়েট, সুপার-ফাস্ট ও আধুনিক **Progressive Web App (PWA)**, যা আপনার **MacBook**, **iPhone**, এবং **Android** ডিভাইসের মধ্যে রিয়েল-টাইমে ক্লিপবোর্ড ডেটা (টেক্সট, লিংক, কোড স্নিপেট, নোট) সিঙ্ক ও ম্যানেজ করে।
+<p align="center">
+  <strong>A lightweight, ultra-fast Progressive Web App (PWA) to sync text, links, and code snippets across MacBook, iPhone, and Android in real-time.</strong>
+</p>
 
----
-
-## ✨ প্রধান বৈশিষ্ট্যসমূহ (Key Features)
-
-1. **⚡ লাইটনিং ফাস্ট ও লাইটওয়েট**:
-   - কোনো ভারী ফ্রেমওয়ার্কের বোঝা নেই, পিউর ভ্যানিলা অপটিমাইজেশন ও Vite দিয়ে নিমেষেই লোড হয় (< 500ms)।
-   - **Service Worker (`sw.js`)** ও অফলাইন ক্যাশিং থাকায় একবার লোড হলে পরবর্তীতে ইনস্ট্যান্টলি ওপেন হয়।
-
-2. **📱 PWA & Web Share Target API**:
-   - **Android / iPhone / Mac**-এ ব্রাউজার ছাড়াই নেটিভ অ্যাপের মতো ইনস্টল করা যায়।
-   - **OS Share Sheet ইন্টিগ্রেশন**: আপনার ফোনে কোনো ব্রাউজার (Chrome/Safari), টুইটার বা যেকোনো অ্যাপ থেকে **"Share"** বাটনে ট্যাপ করে **"ClipSync"** সিলেক্ট করলেই লিংক/টেক্সট অটোমেটিক্যালি এই ভার্চুয়াল ক্লিপবোর্ডে জমা হয়ে যাবে এবং সাথে সাথে অন্য ডিভাইসে চলে যাবে!
-
-3. **🔗 6-Digit Room Code & QR Code পেয়ারিং**:
-   - কোনো জটিল রেজিস্ট্রেশন বা পাসওয়ার্ডের ঝামেলা নেই।
-   - একটি ৬-ডিজিটের রুম কোড (যেমন: `CLIP-4892`) অথবা স্ক্রিনে থাকা **QR Code** মোবাইল দিয়ে স্ক্যান করলেই ডিভাইসগুলো মুহূর্তের মধ্যে পেয়ার হয়ে যায়।
-
-4. **☁️ Firebase Realtime Database সিঙ্ক**:
-   - গ্লোবাল সিঙ্ক: আপনি পৃথিবীর যেকোনো প্রান্ত থেকে সেলুলার ডেটা (4G/5G) বা আলাদা ওয়াইফাই নেটওয়ার্কেও রিয়েল-টাইমে ডেটা পাঠাতে পারবেন।
-   - সম্পূর্ণ ফ্রি Firebase রিয়েলটাইম ডেটাবেস কনফিগ এক ক্লিকে সেভ করা যায়।
-   - অফলাইন ও লোকাল রিলে ফলব্যাক সমৃদ্ধ।
-
-5. **🎨 প্রিমিয়াম ও আধুনিক ডার্ক গ্লাস মরফিজম UI**:
-   - ডিপ স্পেস ব্যাকগ্রাউন্ড, নিয়ন গ্লো ইফেক্ট, ও ফ্লুইড মাইক্রো-অ্যানিমেশন।
-   - **অটো কনটেন্ট ডিটেকশন**: লিংক (🔗 Link), কোড স্নিপেট (💻 Code), এবং সাধারণ টেক্সট (📝 Text) স্বয়ংক্রিয়ভাবে শনাক্ত করে।
-   - **ডিভাইস ব্যাজ**: কোনো ক্লিপ কোথা থেকে এসেছে (💻 MacBook, 📱 iPhone, 🤖 Android) তা প্রতিটি কার্ডে দেখতে পারবেন।
-   - **ক্লিপবোর্ড শর্টকাট**: `⌘ + Enter` দিয়ে দ্রুত সিঙ্ক, `⌘ + K` দিয়ে সার্চ, ১-ক্লিকে কপি ও সাউন্ড/হ্যাপটিক ভাইব্রেশন ফিডব্যাক।
+<p align="center">
+  <img src="https://img.shields.io/badge/PWA-Ready-10B981?style=flat-square" alt="PWA Ready" />
+  <img src="https://img.shields.io/badge/Vite-5.4-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/Firebase-10.14-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase" />
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License MIT" />
+</p>
 
 ---
 
-## 🚀 লোকাল সার্ভার চালু করার নিয়ম (How to Run)
+## Overview
 
-প্রজেক্ট ডিরেক্টরিতে টার্মিনালে রান করুন:
+**ClipSync** is an offline-first, minimal virtual clipboard manager designed for seamless multi-device productivity. It bridges the gap between Apple, Android, and PC ecosystems, allowing you to instantly share copied text, URLs, and code snippets without logging in or using messaging apps like WhatsApp or Telegram as a clipboard scratchpad.
+
+With **Web Share Target API** support, ClipSync appears directly in your mobile system Share Sheet alongside native apps.
+
+---
+
+## ✨ Features
+
+- **⚡ Lightning-Fast & Lightweight**:
+  - Pure Vanilla JS and CSS with Vite bundling (< 450ms build time, gzip bundle < 70 KB).
+  - Instant loading via Service Worker (`sw.js`) and asset pre-caching.
+- **📲 Native OS Share Sheet Integration (Web Share Target)**:
+  - Share links and text from Safari, Chrome, YouTube, Twitter, or any app directly to ClipSync via the native system Share Sheet.
+- **🔗 Instant Pairing (QR Code & 6-Digit Room Code)**:
+  - No email or password needed. Pair devices in seconds by scanning a QR code or entering a 6-digit room code (e.g., `CLIP-4892`).
+- **☁️ Global Real-Time Sync**:
+  - Powered by Firebase Realtime Database for instant synchronization across cellular (4G/5G) and separate Wi-Fi networks.
+  - Automatic fallback to local storage and `BroadcastChannel` relay when offline.
+- **🖥️ Minimal Desktop & Mobile UI**:
+  - **PC Sidebar**: Quick navigation across categories, room status, utilities, and audio controls.
+  - **Expand / Collapse Sidebar**: Toggle sidebar visibility smoothly with the `⌘ + B` (or `Ctrl + B`) shortcut or toggle button.
+  - **Grid (⊞) & List (☰) View Modes**: Switch between multi-column card grid and compact single-column stream.
+  - **Auto Content Detection**: Automatically detects and highlights URLs (`🔗 Link`), syntax blocks (`💻 Code`), and notes (`📝 Text`).
+- **🎵 Zero-Latency Synthesized Audio**:
+  - Subtle audio feedback using Web Audio API oscillators (no external MP3 downloads).
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v18.0.0 or higher)
+- npm or yarn
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/methun404/virtual-clipboard.git
+
+# Navigate to project directory
+cd virtual-clipboard
+
+# Install dependencies
+npm install
+```
+
+### Running Locally (with HTTPS for PWA & Mobile Testing)
+
+ClipSync includes `@vitejs/plugin-basic-ssl` to serve over local HTTPS. This is required by mobile browsers for WebAPK generation and Web Share Target registration:
+
 ```bash
 npm run dev
 ```
 
-টার্মিনালে দুটি অ্যাড্রেস দেখতে পাবেন:
-- **Local (MacBook):** `http://localhost:5173/`
-- **Network (iPhone & Android):** `http://192.168.x.x:5173/` *(একই ওয়াইফাই কানেকশনে থাকলে সরাসরি মোবাইল ব্রাউজারে এই আইপি ওপেন করলেই চলবে)*
+The terminal will display your local and network URLs:
+- **Local (MacBook/PC):** `https://localhost:5173/`
+- **Network (iPhone/Android):** `https://192.168.x.x:5173/` *(open this in your phone's browser connected to the same Wi-Fi)*
 
----
+### Building for Production
 
-## 📲 মোবাইল ও ম্যাকবুকে PWA ইনস্টল করার নিয়ম
-
-### 1. iPhone (iOS Safari):
-1. Safari ব্রাউজারে ClipSync ওপেন করুন।
-2. ব্রাউজারের নিচে থাকা **Share বাটন (⎙)**-এ চাপুন।
-3. একটু নিচে স্ক্রল করে **"Add to Home Screen" (হোম স্ক্রিনে যোগ করুন)** সিলেক্ট করুন।
-4. ব্যস! হোম স্ক্রিনে ClipSync অ্যাপের আইকন যুক্ত হয়ে যাবে।
-
-### 2. Android (Google Chrome):
-1. Chrome ব্রাউজারে লিংকটি ওপেন করুন।
-2. স্ক্রিনের উপরের ডানদিকের থ্রি-ডট মেনু (⋮)-তে ট্যাপ করুন অথবা সাইটের উপরে আসা **"Install App"** বাটনে ক্লিক করুন।
-3. **"Install"** কনফার্ম করলেই এটি একটি নেটিভ অ্যাপ (WebAPK) হিসেবে ইনস্টল হবে এবং শেয়ার মেনুতে চলে আসবে।
-
-### 3. MacBook / Desktop (Chrome / Safari / Edge):
-1. ব্রাউজারের অ্যাড্রেস বারের ডানপাশে থাকা **"Install"** আইকনে ক্লিক করুন অথবা মেনু থেকে **"Install ClipSync"** সিলেক্ট করুন।
-2. এটি আপনার ডক (Dock) ও Launchpad-এ সেভ হয়ে যাবে।
-
----
-
-## 🛠️ ফাইল ও আর্কিটেকচার স্ট্রাকচার
-
+```bash
+npm run build
 ```
+
+Production assets will be output to the `dist/` directory.
+
+---
+
+## 📱 PWA Installation Guide
+
+### iOS / iPhone (Safari)
+1. Open the ClipSync URL in **Safari**.
+2. Tap the **Share** button (box with upward arrow) at the bottom toolbar.
+3. Scroll down and tap **"Add to Home Screen"**.
+4. ClipSync will be added to your home screen and run standalone with full-screen experience.
+
+### Android (Chrome)
+1. Open the ClipSync URL in **Google Chrome**.
+2. Tap the three-dot menu (⋮) in the top right or tap the **"Install App"** prompt.
+3. Tap **"Install"**. Chrome will generate a native WebAPK that integrates into your Android system Share Sheet.
+
+### macOS / Windows Desktop
+1. Open in Chrome, Edge, or Brave.
+2. Click the **Install** icon in the browser address bar or click **"Install PWA"** in the sidebar.
+3. ClipSync will open in its own distraction-free desktop window and appear in your Launchpad / Applications.
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+| :--- | :--- |
+| `⌘ + Enter` / `Ctrl + Enter` | Instant Sync / Submit Clip |
+| `⌘ + B` / `Ctrl + B` | Toggle Sidebar (Expand / Collapse) |
+| `Esc` | Close Active Modal (Pair / Settings) |
+
+---
+
+## 📁 Project Structure
+
+```text
 virtual_clipboard/
-├── index.html               # প্রধান অ্যাপ শেল ও লেআউট
-├── package.json             # ডিপেনডেন্সি ও স্ক্রিপ্টস (Vite, Firebase, QRCode)
+├── index.html               # Main application shell and UI layout
+├── package.json             # Dependencies and scripts (Vite, Firebase, QRCode)
+├── vite.config.js           # Vite configuration with basic-ssl for local HTTPS
 ├── public/
-│   ├── manifest.webmanifest # PWA ম্যানিফেস্ট ও Web Share Target কনফিগারেশন
-│   ├── sw.js                # সার্ভিস ওয়ার্কার (অফলাইন ক্যাশিং ও লাইটনিং ফাস্ট লোডিং)
-│   ├── icon.svg             # ভেক্টর অ্যাপ আইকন
-│   ├── icon-192.png         # ১৯২x১৯২ অ্যাপ আইকন
-│   ├── icon-512.png         # ৫১২x৫১২ অ্যাপ আইকন
-│   └── favicon.svg          # ব্রাউজার ফেভিকন
+│   ├── manifest.webmanifest # PWA Web App Manifest with Web Share Target definition
+│   ├── sw.js                # Service Worker for offline caching & share target intercept
+│   ├── icon.svg             # Scalable vector application icon
+│   ├── icon-192.png         # 192x192 PWA icon
+│   ├── icon-512.png         # 512x512 PWA icon
+│   └── favicon.svg          # Browser tab icon
 └── src/
-    ├── style.css            # আল্ট্রা-স্মুথ ভ্যানিলা CSS ও ডার্ক গ্লাস মরফিক ডিজাইন সিস্টেম
-    ├── sound.js             # ওয়েব অডিও সিন্থেসাইজার (সাউন্ড এফেক্টস)
-    ├── firebase.js          # Firebase রিয়েল-টাইম ডেটাবেস ও লোকাল রিলে সিঙ্ক ইঞ্জিন
-    └── main.js              # প্রধান অ্যাপ্লিকেশন লজিক, শেয়ার টার্গেট হ্যান্ডলার ও কিবোর্ড শর্টকাট
+    ├── style.css            # Minimal dark design system & responsive layout
+    ├── sound.js             # Synthesized Web Audio API sound effects engine
+    ├── firebase.js          # Realtime Database sync engine with local relay fallback
+    └── main.js              # Application logic, event listeners, view modes & shortcuts
 ```
 
 ---
 
-## ☁️ Firebase ফ্রি ক্লাউড সিঙ্ক সেটআপ (ঐচ্ছিক কিন্তু গ্লোবালের জন্য দারুণ)
+## ☁️ Optional Firebase Cloud Setup
 
-একই ওয়াইফাই ছাড়া যেকোনো জায়গা থেকে লাইভ সিঙ্ক করার জন্য:
-1. [Firebase Console](https://console.firebase.google.com)-এ গিয়ে একটি ফ্রি প্রজেক্ট খুলুন।
-2. **Build > Realtime Database** তৈরি করুন (Test mode-এ রাখুন)।
-3. Project Settings থেকে **Web app** যোগ করে পাওয়া `firebaseConfig` অবজেক্টটি কপি করুন।
-4. ClipSync-এর সেটিংস (⚙️) আইকনে ক্লিক করে পেস্ট করে **"Save & Connect"** দিন!
+ClipSync works offline and across local tabs by default. To sync globally across different networks and cellular data:
+
+1. Create a free project on the [Firebase Console](https://console.firebase.google.com).
+2. Create a **Realtime Database** under **Build > Realtime Database** in Test Mode.
+3. Go to **Project Settings > General** and scroll down to **Your apps > Web app** to copy your Firebase configuration object.
+4. In ClipSync, click **"Cloud Sync"** in the sidebar, paste your configuration JSON, and click **Save & Connect**.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
