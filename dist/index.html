@@ -3,88 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>ClipSync — Minimal Dashboard</title>
+  <title>ClipSync</title>
   
-  <!-- SEO & PWA Meta Tags -->
-  <meta name="description" content="Minimal, ultra-fast virtual clipboard manager dashboard for Mac, iPhone, and Android.">
-  <meta name="theme-color" content="#0B0F17">
+  <!-- SEO & PWA Meta -->
+  <meta name="description" content="Minimal, ultra-fast virtual clipboard manager for Mac, iPhone, and Android.">
+  <meta name="theme-color" content="#0e0f12">
   <meta name="color-scheme" content="dark">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="ClipSync">
-  <meta name="application-name" content="ClipSync">
 
-  <!-- Manifest & Icons -->
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/icon.svg">
 
-  <!-- Google Fonts: Plus Jakarta Sans, Outfit, JetBrains Mono -->
+  <!-- Google Fonts: Inter / Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <script type="module" crossorigin src="/assets/index-Bt0Al_lj.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DUHq3nNe.css">
+  <script type="module" crossorigin src="/assets/index-BTUlGAZA.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-C103gzl-.css">
 </head>
 <body>
-  <div id="app" class="dashboard-layout">
-    
-    <!-- Top Navigation Bar -->
-    <header class="navbar">
-      <div class="nav-left">
-        <div class="brand" id="brand-logo" role="banner">
-          <div class="brand-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-          </div>
-          <span class="brand-name">ClipSync</span>
-        </div>
+  <div class="app-wrap">
 
-        <div class="nav-divider"></div>
-
-        <!-- Room / Sync Status Indicator -->
-        <button id="btn-room-badge" class="room-pill" title="Pair devices or view room QR code" aria-label="Room Settings">
-          <span class="status-indicator online" id="status-dot"></span>
-          <span class="room-code-text" id="display-room-id">CLIP-....</span>
-          <svg class="chevron-mini" viewBox="0 0 16 16" fill="currentColor">
-            <path fill-rule="evenodd" d="M4.293 6.293a1 1 0 011.414 0L8 8.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
+    <!-- Minimal Header -->
+    <header class="top-nav">
+      <div class="nav-brand">
+        <span class="logo-mark">⚡</span>
+        <span class="app-title">ClipSync</span>
+        <button id="btn-room" class="room-pill" title="Click to view QR code or change room">
+          <span class="live-dot online" id="status-dot"></span>
+          <span id="display-room-id">CLIP-....</span>
         </button>
       </div>
 
-      <!-- Center Search -->
-      <div class="nav-center">
-        <div class="search-bar">
-          <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+      <div class="nav-actions">
+        <!-- Install PWA (Shows only when installable) -->
+        <button id="btn-install-pwa" class="btn-subtle hidden" title="Install App">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
           </svg>
-          <input
-            type="text"
-            id="search-input"
-            class="search-field"
-            placeholder="Search clipboard... (Press / or ⌘K)"
-            aria-label="Search clipboard items"
-          >
-          <button id="btn-clear-search" class="clear-search-btn hidden" title="Clear search">✕</button>
-          <span class="search-key-hint"><kbd>⌘K</kbd></span>
-        </div>
-      </div>
-
-      <!-- Right Nav Actions -->
-      <div class="nav-right">
-        <!-- Install PWA button -->
-        <button id="btn-install-pwa" class="btn-subtle hidden" title="Install as app" aria-label="Install App">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          <span class="hide-mobile">Install</span>
+          <span>Install</span>
         </button>
 
-        <!-- Sound toggle -->
-        <button id="btn-sound-toggle" class="btn-icon" title="Toggle audio feedback" aria-label="Toggle Sound">
+        <button id="btn-sound" class="btn-icon" title="Toggle Sound">
           <svg id="sound-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -96,8 +60,7 @@
           </svg>
         </button>
 
-        <!-- Pair Devices (QR Code) -->
-        <button id="btn-pair-device" class="btn-icon" title="Pair iPhone, Android, or MacBook" aria-label="Pair Devices">
+        <button id="btn-pair" class="btn-icon" title="Pair Device (QR Code)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
@@ -106,293 +69,132 @@
           </svg>
         </button>
 
-        <!-- Cloud Settings -->
-        <button id="btn-open-settings" class="btn-icon" title="Cloud Sync Settings" aria-label="Settings">
+        <button id="btn-settings" class="btn-icon" title="Cloud Settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
         </button>
-
-        <!-- Primary Add Clip Button -->
-        <button id="btn-open-new-clip" class="btn-primary-add" title="Add new clipboard item (⌘N)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          <span>New Clip</span>
-          <kbd class="btn-kbd">⌘N</kbd>
-        </button>
       </div>
     </header>
 
-    <!-- Dashboard Subheader Toolbar -->
-    <div class="dashboard-toolbar">
-      <div class="toolbar-left">
-        <!-- Segmented Filter Control -->
-        <nav class="filter-tabs" role="tablist" aria-label="Filter clipboard items">
-          <button class="tab-btn active" data-filter="all" role="tab" aria-selected="true">
-            <span>All Items</span>
-            <span class="tab-badge" id="count-all">0</span>
-          </button>
-          <button class="tab-btn" data-filter="link" role="tab" aria-selected="false">
-            <span>🔗 Links</span>
-            <span class="tab-badge" id="count-link">0</span>
-          </button>
-          <button class="tab-btn" data-filter="text" role="tab" aria-selected="false">
-            <span>📝 Text</span>
-            <span class="tab-badge" id="count-text">0</span>
-          </button>
-          <button class="tab-btn" data-filter="code" role="tab" aria-selected="false">
-            <span>💻 Code</span>
-            <span class="tab-badge" id="count-code">0</span>
-          </button>
-          <button class="tab-btn" data-filter="pinned" role="tab" aria-selected="false">
-            <span>⭐ Pinned</span>
-            <span class="tab-badge" id="count-pinned">0</span>
-          </button>
-        </nav>
-      </div>
+    <!-- Raycast / Spotlight Style Unified Input Bar -->
+    <section class="command-box">
+      <div class="command-input-row">
+        <svg class="search-lead-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+        </svg>
 
-      <div class="toolbar-right">
-        <!-- Quick Paste System Clipboard -->
-        <button id="btn-quick-paste" class="btn-toolbar" title="Paste directly from system clipboard">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          <span class="hide-mobile">Quick Paste</span>
-        </button>
+        <input
+          type="text"
+          id="main-input"
+          class="command-input"
+          placeholder="Paste or type link, text, note... (or search clips)"
+          autocomplete="off"
+          spellcheck="false"
+        >
 
-        <!-- Export -->
-        <button id="btn-export-clips" class="btn-toolbar" title="Export as JSON">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          <span class="hide-mobile">Export</span>
-        </button>
-
-        <!-- Clear All -->
-        <button id="btn-clear-all" class="btn-toolbar danger" title="Clear unpinned history">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          </svg>
-          <span class="hide-mobile">Clear</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Main Dashboard Container -->
-    <main class="dashboard-body">
-      <!-- Loading State -->
-      <div class="state-container" id="loading-state">
-        <div class="mini-spinner"></div>
-        <span class="state-msg">Syncing dashboard...</span>
-      </div>
-
-      <!-- Empty State -->
-      <div class="empty-dashboard hidden" id="empty-state">
-        <div class="empty-icon-box">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-            <rect x="4" y="4" width="16" height="16" rx="3"></rect>
-            <path d="M9 9h6M9 13h6M9 17h4"></path>
-          </svg>
-        </div>
-        <h2 class="empty-heading">No items in your virtual clipboard</h2>
-        <p class="empty-subheading">
-          Add links or text using the button below, or share content directly from your iPhone or Android.
-        </p>
-        <div class="empty-buttons">
-          <button id="btn-empty-add" class="btn-primary-add">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
+        <div class="command-right-tools">
+          <button id="btn-paste-sys" class="btn-tool" title="Paste from clipboard">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
             </svg>
-            <span>Add First Clip</span>
+            <span>Paste</span>
           </button>
-          <button id="btn-add-sample" class="btn-subtle">
-            <span>Load Sample Data</span>
+          
+          <button id="btn-submit" class="btn-enter" title="Press Enter to sync">
+            <span>Sync</span>
+            <kbd>↵</kbd>
           </button>
         </div>
       </div>
 
-      <!-- Clipboard Dashboard List -->
-      <div class="clipboard-table" id="clips-list" role="list"></div>
+      <!-- Minimal clean filter chips row -->
+      <div class="filter-strip">
+        <div class="filter-left">
+          <button class="pill-btn active" data-filter="all">All <span class="badge" id="count-all">0</span></button>
+          <button class="pill-btn" data-filter="link">Links <span class="badge" id="count-link">0</span></button>
+          <button class="pill-btn" data-filter="text">Notes <span class="badge" id="count-text">0</span></button>
+          <button class="pill-btn" data-filter="pinned">⭐ Pinned <span class="badge" id="count-pinned">0</span></button>
+        </div>
+
+        <div class="filter-right">
+          <button id="btn-clear-history" class="btn-clear-text" title="Clear unpinned items">Clear</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Clean Clipboard Stream -->
+    <main class="content-stream">
+      <div class="stream-loader" id="loading-state">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="stream-empty hidden" id="empty-state">
+        <p class="empty-title">Clipboard is empty</p>
+        <p class="empty-hint">Type or paste anything in the bar above, or share directly from your phone.</p>
+        <button id="btn-sample" class="btn-sample">Load Sample Clips</button>
+      </div>
+
+      <!-- Clips list -->
+      <div class="clips-stack" id="clips-list"></div>
     </main>
 
-    <!-- Mobile Floating Action Button (FAB) -->
-    <button id="btn-mobile-fab" class="mobile-fab" aria-label="Add New Clip" title="Add New Clip">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-      </svg>
-    </button>
+    <!-- Toasts -->
+    <div id="toast-container" class="toast-wrap" aria-live="polite"></div>
 
-    <!-- Bottom Toast Notifications -->
-    <div id="toast-container" class="toast-stack" aria-live="polite"></div>
-
-    <!-- ==========================================================================
-         MODALS
-         ========================================================================== -->
-
-    <!-- Modal: New Clip Composer -->
-    <div id="modal-new-clip" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="new-clip-title">
-      <div class="modal-box modal-medium">
-        <div class="modal-header">
-          <div class="modal-title-group">
-            <h2 id="new-clip-title" class="modal-title">New Clipboard Item</h2>
-            <div class="type-indicator" id="detected-type-pill">
-              <span id="detected-icon">📝</span>
-              <span id="detected-text">Text</span>
-            </div>
-          </div>
-          <button class="modal-close-btn" id="btn-close-new-clip" aria-label="Close">✕</button>
+    <!-- Modal: Pair Device / QR Code -->
+    <div id="modal-pair" class="modal-dim hidden" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <div class="modal-top">
+          <h3>Pair Device</h3>
+          <button class="btn-close" id="btn-close-pair">✕</button>
         </div>
-
-        <div class="modal-content">
-          <div class="composer-toolbar">
-            <button id="btn-modal-paste" class="btn-composer-tool">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              <span>Paste from System</span>
-            </button>
-            <span class="char-counter" id="char-count">0 characters</span>
-          </div>
-
-          <textarea
-            id="clip-input"
-            class="composer-textarea"
-            placeholder="Type or paste link, text, code, or notes here..."
-            rows="6"
-            autofocus
-          ></textarea>
-        </div>
-
-        <div class="modal-footer">
-          <div class="footer-hint">
-            <kbd>⌘</kbd> + <kbd>Enter</kbd> to save & sync
-          </div>
-          <div class="footer-actions">
-            <button id="btn-cancel-compose" class="btn-subtle">Cancel</button>
-            <button id="btn-sync-clip" class="btn-primary-add">
-              <span>Sync to Devices</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal: Pair Devices (QR Code) -->
-    <div id="modal-pair" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pair-modal-title">
-      <div class="modal-box modal-medium">
-        <div class="modal-header">
-          <div class="modal-title-group">
-            <h2 id="pair-modal-title" class="modal-title">Device Pairing</h2>
-            <p class="modal-subtitle">Instant sync across MacBook, iPhone & Android</p>
-          </div>
-          <button class="modal-close-btn" id="btn-close-pair" aria-label="Close">✕</button>
-        </div>
-
-        <div class="modal-content text-center">
-          <div class="qr-wrapper">
+        <div class="modal-inner text-center">
+          <div class="qr-box">
             <div id="qr-canvas-holder"></div>
           </div>
-          <p class="qr-caption">Scan with your phone camera to pair instantly</p>
+          <p class="qr-text">Scan with your iPhone or Android camera</p>
 
-          <div class="form-group">
-            <label class="form-label" for="pair-room-input">Active 6-Digit Room Code</label>
-            <div class="input-action-row">
-              <input type="text" id="pair-room-input" class="input-prominent" readonly value="CLIP-...." aria-label="Room Code">
-              <button id="btn-copy-room-link" class="btn-subtle">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                <span>Copy Link</span>
-              </button>
+          <div class="code-box">
+            <label>6-Digit Room Code</label>
+            <div class="code-row">
+              <input type="text" id="pair-room-input" readonly value="CLIP-....">
+              <button id="btn-copy-link" class="btn-subtle">Copy Link</button>
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="input-custom-room">Join Different Room</label>
-            <div class="input-action-row">
-              <input type="text" id="input-custom-room" class="input-field" placeholder="Enter code (e.g. CLIP-8921)" maxlength="12">
-              <button id="btn-switch-room" class="btn-subtle">Join</button>
-              <button id="btn-random-room" class="btn-subtle" title="Generate New Room">🎲 New</button>
-            </div>
+          <div class="switch-box">
+            <input type="text" id="input-custom-room" placeholder="Switch Room (e.g. CLIP-4820)" maxlength="12">
+            <button id="btn-switch-room" class="btn-subtle">Join</button>
+            <button id="btn-new-room" class="btn-subtle">🎲 New</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal: Firebase Settings -->
-    <div id="modal-settings" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-      <div class="modal-box modal-medium">
-        <div class="modal-header">
-          <div class="modal-title-group">
-            <h2 id="settings-title" class="modal-title">Cloud Sync Configuration</h2>
-            <p class="modal-subtitle">Global internet sync via Firebase Realtime Database</p>
-          </div>
-          <button class="modal-close-btn" id="btn-close-settings" aria-label="Close">✕</button>
+    <!-- Modal: Settings / Firebase -->
+    <div id="modal-settings" class="modal-dim hidden" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <div class="modal-top">
+          <h3>Cloud Sync</h3>
+          <button class="btn-close" id="btn-close-settings">✕</button>
         </div>
-
-        <div class="modal-content">
-          <div class="status-callout" id="sync-status-card">
-            <span class="status-pill" id="settings-status-badge">Local Mode Active</span>
-            <p class="status-desc" id="settings-status-detail">
-              Syncing on local Wi-Fi and browser relay. To sync across cellular networks globally, add your free Firebase config.
-            </p>
-          </div>
-
-          <div class="guide-toggle-bar" id="btn-toggle-guide">
-            <span>📖 How to get free Firebase config (30 seconds)</span>
-            <svg class="chevron-sm" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-          </div>
-          <div class="guide-panel hidden" id="guide-content">
-            <ol>
-              <li>Go to <a href="https://console.firebase.google.com" target="_blank" rel="noopener">Firebase Console</a> &gt; Create project.</li>
-              <li>Add a <strong>Web App (&lt;/&gt;)</strong> and copy the <code>firebaseConfig</code> object.</li>
-              <li>Under <strong>Build &gt; Realtime Database</strong>, create a database in test mode.</li>
-              <li>Paste the configuration below and click Save.</li>
-            </ol>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="firebase-json-input">Firebase Config Object (JSON)</label>
-            <textarea
-              id="firebase-json-input"
-              class="code-textarea"
-              rows="5"
-              placeholder='{"apiKey": "...", "databaseURL": "...", "projectId": "..."}'
-            ></textarea>
-          </div>
-
-          <div class="modal-actions-row">
-            <button id="btn-reset-firebase" class="btn-subtle danger">Reset to Local</button>
-            <button id="btn-save-firebase" class="btn-primary-add">Save & Connect</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal: Confirm Clear History -->
-    <div id="modal-confirm-clear" class="modal-overlay hidden" role="dialog" aria-modal="true">
-      <div class="modal-box modal-small">
-        <div class="modal-header">
-          <h2 class="modal-title">Clear Clipboard Items?</h2>
-          <button class="modal-close-btn" id="btn-close-confirm">✕</button>
-        </div>
-        <div class="modal-content">
-          <p class="modal-desc">
-            This will remove all unpinned clipboard items from the active room. Pinned items will be kept.
+        <div class="modal-inner">
+          <p class="settings-hint">
+            To sync globally across cellular & different Wi-Fi networks, paste your free Firebase configuration below:
           </p>
-        </div>
-        <div class="modal-footer">
-          <button id="btn-cancel-clear" class="btn-subtle">Cancel</button>
-          <button id="btn-execute-clear" class="btn-primary-add danger">Yes, Clear</button>
+          <textarea
+            id="firebase-json-input"
+            class="settings-textarea"
+            rows="5"
+            placeholder='{"apiKey": "...", "databaseURL": "...", "projectId": "..."}'
+          ></textarea>
+          <div class="settings-btn-row">
+            <button id="btn-reset-firebase" class="btn-clear-text">Reset to Local</button>
+            <button id="btn-save-firebase" class="btn-enter">Save & Connect</button>
+          </div>
         </div>
       </div>
     </div>
