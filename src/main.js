@@ -9,19 +9,37 @@ let searchQuery = '';
 let deferredPrompt = null;
 let currentViewMode = localStorage.getItem('clipsync_view_mode') || 'grid';
 
-// DOM Elements
-const mainInput = document.getElementById('main-input');
-const btnSubmit = document.getElementById('btn-submit');
-const btnPasteSys = document.getElementById('btn-paste-sys');
-const composeTypeTag = document.getElementById('compose-type-tag');
+// Category Titles
+const categoryTitles = {
+  all: 'All Clips',
+  link: 'Links & URLs',
+  text: 'Notes & Text',
+  code: 'Code Snippets',
+  pinned: 'Pinned Clips'
+};
 
-// Controls & Search
-const searchInput = document.getElementById('search-input');
-const btnClearSearch = document.getElementById('btn-clear-search');
+// Sidebar Elements
+const appSidebar = document.getElementById('app-sidebar');
+const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+const navItems = document.querySelectorAll('.nav-item');
+const activeCategoryTitle = document.getElementById('active-category-title');
+const btnExportClips = document.getElementById('btn-export-clips');
 const btnClearHistory = document.getElementById('btn-clear-history');
-const filterPills = document.querySelectorAll('.pill-btn');
-const btnViewGrid = document.getElementById('btn-view-grid');
-const btnViewList = document.getElementById('btn-view-list');
+
+// Room & Status in Sidebar
+const displayRoomId = document.getElementById('display-room-id');
+const statusDot = document.getElementById('status-dot');
+const statusText = document.getElementById('status-text');
+const btnRoom = document.getElementById('btn-room');
+const btnPair = document.getElementById('btn-pair');
+const btnSettings = document.getElementById('btn-settings');
+const btnSound = document.getElementById('btn-sound');
+const soundIconOn = document.getElementById('sound-icon-on');
+const soundIconOff = document.getElementById('sound-icon-off');
+const soundLabel = document.getElementById('sound-label');
+const btnInstallPwa = document.getElementById('btn-install-pwa');
 
 // Counts
 const countAll = document.getElementById('count-all');
@@ -30,7 +48,17 @@ const countText = document.getElementById('count-text');
 const countCode = document.getElementById('count-code');
 const countPinned = document.getElementById('count-pinned');
 
-// Stream & States
+// Main Input & Toolbar
+const mainInput = document.getElementById('main-input');
+const btnSubmit = document.getElementById('btn-submit');
+const btnPasteSys = document.getElementById('btn-paste-sys');
+const composeTypeTag = document.getElementById('compose-type-tag');
+const searchInput = document.getElementById('search-input');
+const btnClearSearch = document.getElementById('btn-clear-search');
+const btnViewGrid = document.getElementById('btn-view-grid');
+const btnViewList = document.getElementById('btn-view-list');
+
+// Feed & Feedback
 const clipsList = document.getElementById('clips-list');
 const emptyState = document.getElementById('empty-state');
 const loadingState = document.getElementById('loading-state');
@@ -38,18 +66,7 @@ const btnSample = document.getElementById('btn-sample');
 const btnMobileFab = document.getElementById('btn-mobile-fab');
 const toastContainer = document.getElementById('toast-container');
 
-// Header & Navigation
-const displayRoomId = document.getElementById('display-room-id');
-const statusDot = document.getElementById('status-dot');
-const btnRoom = document.getElementById('btn-room');
-const btnPair = document.getElementById('btn-pair');
-const btnSettings = document.getElementById('btn-settings');
-const btnSound = document.getElementById('btn-sound');
-const soundIconOn = document.getElementById('sound-icon-on');
-const soundIconOff = document.getElementById('sound-icon-off');
-const btnInstallPwa = document.getElementById('btn-install-pwa');
-
-// Modal: Pair Device
+// Modals: Pair
 const modalPair = document.getElementById('modal-pair');
 const btnClosePair = document.getElementById('btn-close-pair');
 const qrCanvasHolder = document.getElementById('qr-canvas-holder');
@@ -59,7 +76,7 @@ const inputCustomRoom = document.getElementById('input-custom-room');
 const btnSwitchRoom = document.getElementById('btn-switch-room');
 const btnNewRoom = document.getElementById('btn-new-room');
 
-// Modal: Settings
+// Modals: Settings
 const modalSettings = document.getElementById('modal-settings');
 const btnCloseSettings = document.getElementById('btn-close-settings');
 const firebaseJsonInput = document.getElementById('firebase-json-input');
@@ -416,17 +433,45 @@ function setActiveFilter(filterKey) {
   currentFilter = filterKey;
   sound.playPop();
 
-  filterPills.forEach((p) => {
-    p.classList.toggle('active', p.dataset.filter === filterKey);
+  navItems.forEach((item) => {
+    item.classList.toggle('active', item.dataset.filter === filterKey);
   });
 
+  if (activeCategoryTitle && categoryTitles[filterKey]) {
+    activeCategoryTitle.textContent = categoryTitles[filterKey];
+  }
+
+  closeSidebar();
   renderClips();
+}
+
+/* ==========================================================================
+   Sidebar Drawer Toggle (Mobile)
+   ========================================================================== */
+function openSidebar() {
+  if (appSidebar) appSidebar.classList.add('open');
+  if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
+}
+
+function closeSidebar() {
+  if (appSidebar) appSidebar.classList.remove('open');
+  if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
 }
 
 /* ==========================================================================
    Event Bindings
    ========================================================================== */
 function bindEvents() {
+  // Mobile Sidebar Toggle
+  if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', openSidebar);
+  if (btnCloseSidebar) btnCloseSidebar.addEventListener('click', closeSidebar);
+  if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
+
+  // Category navigation
+  navItems.forEach((item) => {
+    item.addEventListener('click', () => setActiveFilter(item.dataset.filter));
+  });
+
   // Compose input & submit
   if (mainInput) {
     mainInput.addEventListener('input', () => updateComposeBadge(mainInput.value));
@@ -448,11 +493,6 @@ function bindEvents() {
     });
   }
 
-  // Filter Pills
-  filterPills.forEach((pill) => {
-    pill.addEventListener('click', () => setActiveFilter(pill.dataset.filter));
-  });
-
   // Search
   if (searchInput) {
     searchInput.addEventListener('input', () => {
@@ -471,6 +511,21 @@ function bindEvents() {
         renderClips();
         searchInput.focus();
       }
+    });
+  }
+
+  // Export JSON
+  if (btnExportClips) {
+    btnExportClips.addEventListener('click', () => {
+      sound.playPop();
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(allClips, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', dataStr);
+      downloadAnchor.setAttribute('download', `clipsync-${syncService.roomId}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Exported clipboard history JSON', 'success');
     });
   }
 
@@ -671,7 +726,9 @@ function updateRoomUI() {
   if (displayRoomId) displayRoomId.textContent = syncService.roomId;
   if (statusDot) {
     statusDot.className = `status-dot ${syncService.isCloudActive ? 'online' : 'local'}`;
-    statusDot.title = syncService.isCloudActive ? 'Connected to Firebase Realtime Cloud' : 'Local / LocalStorage active';
+  }
+  if (statusText) {
+    statusText.textContent = syncService.isCloudActive ? 'Firebase Realtime Cloud' : 'Local / Offline Sync';
   }
 }
 
@@ -683,6 +740,9 @@ function updateSoundIcons(enabled) {
   if (soundIconOn && soundIconOff) {
     soundIconOn.classList.toggle('hidden', !enabled);
     soundIconOff.classList.toggle('hidden', enabled);
+  }
+  if (soundLabel) {
+    soundLabel.textContent = enabled ? 'Audio: On' : 'Audio: Muted';
   }
 }
 

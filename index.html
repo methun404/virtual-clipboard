@@ -27,169 +27,236 @@
   <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-  <!-- Standard Top Navbar -->
-  <header class="navbar">
-    <div class="nav-container">
-      <div class="nav-left">
+  <div class="app-layout">
+    <!-- Desktop / PC Sidebar -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <!-- Sidebar Header -->
+      <div class="sidebar-header">
         <a href="/" class="brand" id="btn-brand">
           <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
           <span class="brand-title">ClipSync</span>
         </a>
-
-        <div class="nav-divider hide-mobile"></div>
-
-        <button id="btn-room" class="room-pill" title="Click to view QR code or change room">
-          <span class="status-dot online" id="status-dot"></span>
-          <span class="room-label hide-xs">Room:</span>
-          <span class="room-id" id="display-room-id">CLIP-....</span>
-        </button>
+        <button class="btn-close-sidebar hide-desktop" id="btn-close-sidebar" aria-label="Close Sidebar">✕</button>
       </div>
 
-      <div class="nav-right">
-        <!-- Install PWA Button -->
-        <button id="btn-install-pwa" class="btn-nav hidden" title="Install App">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-          </svg>
-          <span class="hide-xs">Install</span>
-        </button>
-
-        <button id="btn-pair" class="btn-nav" title="Pair iPhone or Android">
+      <!-- Active Room / Sync Status Card -->
+      <div class="sidebar-room-card">
+        <div class="room-status-line">
+          <span class="status-dot online" id="status-dot"></span>
+          <span class="status-text" id="status-text">Realtime Sync Active</span>
+        </div>
+        <div class="room-code-display" id="btn-room" title="Click to view QR code or change room">
+          <span class="room-label">ROOM:</span>
+          <strong id="display-room-id">CLIP-....</strong>
+        </div>
+        <button id="btn-pair" class="btn-sidebar-action" title="Scan QR Code to pair iPhone or Android">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
             <rect x="14" y="14" width="7" height="7"></rect>
             <rect x="3" y="14" width="7" height="7"></rect>
           </svg>
-          <span class="hide-mobile">Pair Device</span>
+          <span>Pair Mobile (QR)</span>
+        </button>
+      </div>
+
+      <!-- Navigation Categories -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">CATEGORIES</div>
+        <nav class="sidebar-nav">
+          <button class="nav-item active" data-filter="all">
+            <span class="nav-item-icon">📋</span>
+            <span class="nav-item-text">All Clips</span>
+            <span class="nav-item-badge" id="count-all">0</span>
+          </button>
+          <button class="nav-item" data-filter="link">
+            <span class="nav-item-icon">🔗</span>
+            <span class="nav-item-text">Links & URLs</span>
+            <span class="nav-item-badge" id="count-link">0</span>
+          </button>
+          <button class="nav-item" data-filter="text">
+            <span class="nav-item-icon">📝</span>
+            <span class="nav-item-text">Notes & Text</span>
+            <span class="nav-item-badge" id="count-text">0</span>
+          </button>
+          <button class="nav-item" data-filter="code">
+            <span class="nav-item-icon">💻</span>
+            <span class="nav-item-text">Code Snippets</span>
+            <span class="nav-item-badge" id="count-code">0</span>
+          </button>
+          <button class="nav-item" data-filter="pinned">
+            <span class="nav-item-icon">⭐</span>
+            <span class="nav-item-text">Pinned</span>
+            <span class="nav-item-badge" id="count-pinned">0</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Quick Utilities -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">UTILITIES</div>
+        <div class="sidebar-action-list">
+          <button id="btn-export-clips" class="sidebar-action-btn" title="Export clipboard history as JSON">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Export JSON</span>
+          </button>
+          <button id="btn-clear-history" class="sidebar-action-btn danger" title="Clear unpinned clips">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Clear Unpinned</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sidebar Footer Settings -->
+      <div class="sidebar-footer">
+        <button id="btn-install-pwa" class="sidebar-footer-btn hidden" title="Install Web App">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          <span>Install PWA</span>
         </button>
 
-        <button id="btn-sound" class="btn-icon" title="Toggle audio feedback" aria-label="Toggle Sound">
-          <svg id="sound-icon-on" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="btn-sound" class="sidebar-footer-btn" title="Toggle audio feedback">
+          <svg id="sound-icon-on" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
           </svg>
-          <svg id="sound-icon-off" class="hidden" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <svg id="sound-icon-off" class="hidden" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <line x1="23" y1="9" x2="17" y2="15"></line>
             <line x1="17" y1="9" x2="23" y2="15"></line>
           </svg>
+          <span id="sound-label">Audio: On</span>
         </button>
 
-        <button id="btn-settings" class="btn-icon" title="Cloud Settings" aria-label="Settings">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="btn-settings" class="sidebar-footer-btn" title="Cloud Sync Settings">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
+          <span>Cloud Sync</span>
         </button>
       </div>
-    </div>
-  </header>
+    </aside>
 
-  <!-- Clean Minimal Workspace -->
-  <main class="app-main">
+    <!-- Sidebar Backdrop for Mobile -->
+    <div class="sidebar-backdrop hide-desktop" id="sidebar-backdrop"></div>
 
-    <!-- Minimal Quick Add Bar (Top of Feed) -->
-    <section class="quick-compose-bar">
-      <div class="compose-input-wrapper">
-        <textarea
-          id="main-input"
-          class="compose-textarea"
-          placeholder="Paste or type link, text, code... (Press ⌘+Enter or click Sync)"
-          rows="2"
-        ></textarea>
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Clean Topbar in Main Area -->
+      <header class="main-topbar">
+        <div class="topbar-left">
+          <button class="btn-sidebar-toggle hide-desktop" id="btn-toggle-sidebar" aria-label="Open navigation menu">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h1 class="topbar-title" id="active-category-title">All Clips</h1>
+        </div>
 
-        <div class="compose-bottom-tools">
-          <div class="compose-type-tag" id="compose-type-tag">📝 Text</div>
+        <div class="topbar-right">
+          <!-- Search Box -->
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+            <input
+              type="text"
+              id="search-input"
+              class="search-field"
+              placeholder="Search clips..."
+              autocomplete="off"
+            >
+            <button id="btn-clear-search" class="clear-search-btn hidden">✕</button>
+          </div>
 
-          <div class="compose-actions">
-            <button id="btn-paste-sys" class="btn-tool" title="Paste from system clipboard">
+          <!-- View Switcher: Grid vs List -->
+          <div class="view-switcher" role="group" aria-label="View Mode">
+            <button id="btn-view-grid" class="btn-view active" title="Grid View">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
               </svg>
-              <span>Paste</span>
             </button>
-
-            <button id="btn-submit" class="btn-primary" title="Sync to devices">
-              <span>Sync</span>
-              <kbd>↵</kbd>
+            <button id="btn-view-list" class="btn-view" title="List View">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
             </button>
           </div>
         </div>
-      </div>
-    </section>
+      </header>
 
-    <!-- Unified Controls Row (Filter Pills + Search + View Switcher) -->
-    <section class="controls-row">
-      <div class="filter-pills">
-        <button class="pill-btn active" data-filter="all">All <span class="badge" id="count-all">0</span></button>
-        <button class="pill-btn" data-filter="link">🔗 Links <span class="badge" id="count-link">0</span></button>
-        <button class="pill-btn" data-filter="text">📝 Notes <span class="badge" id="count-text">0</span></button>
-        <button class="pill-btn" data-filter="code">💻 Code <span class="badge" id="count-code">0</span></button>
-        <button class="pill-btn" data-filter="pinned">⭐ Pinned <span class="badge" id="count-pinned">0</span></button>
-      </div>
+      <!-- Main Body Container -->
+      <main class="app-body">
+        <!-- Minimal Quick Add Bar -->
+        <section class="quick-compose-bar">
+          <div class="compose-input-wrapper">
+            <textarea
+              id="main-input"
+              class="compose-textarea"
+              placeholder="Paste or type link, text, code... (Press ⌘+Enter or click Sync)"
+              rows="2"
+            ></textarea>
 
-      <div class="controls-right">
-        <div class="search-box">
-          <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-          </svg>
-          <input
-            type="text"
-            id="search-input"
-            class="search-field"
-            placeholder="Search clips..."
-            autocomplete="off"
-          >
-          <button id="btn-clear-search" class="clear-search-btn hidden">✕</button>
-        </div>
+            <div class="compose-bottom-tools">
+              <div class="compose-type-tag" id="compose-type-tag">📝 Text</div>
 
-        <!-- View Switcher: Grid vs List -->
-        <div class="view-switcher" role="group" aria-label="View Mode">
-          <button id="btn-view-grid" class="btn-view active" title="Grid View">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-          </button>
-          <button id="btn-view-list" class="btn-view" title="List View">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="8" y1="6" x2="21" y2="6"></line>
-              <line x1="8" y1="12" x2="21" y2="12"></line>
-              <line x1="8" y1="18" x2="21" y2="18"></line>
-              <line x1="3" y1="6" x2="3.01" y2="6"></line>
-              <line x1="3" y1="12" x2="3.01" y2="12"></line>
-              <line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
-          </button>
-        </div>
+              <div class="compose-actions">
+                <button id="btn-paste-sys" class="btn-tool" title="Paste from system clipboard">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                  </svg>
+                  <span>Paste</span>
+                </button>
 
-        <button id="btn-clear-history" class="btn-clear-text" title="Clear unpinned history">Clear</button>
-      </div>
-    </section>
+                <button id="btn-submit" class="btn-primary" title="Sync to devices">
+                  <span>Sync</span>
+                  <kbd>↵</kbd>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
 
-    <!-- Clips Stream Area -->
-    <section class="clips-stream">
-      <div class="stream-loader" id="loading-state">
-        <div class="spinner"></div>
-      </div>
+        <!-- Clips Stream Area -->
+        <section class="clips-stream">
+          <div class="stream-loader" id="loading-state">
+            <div class="spinner"></div>
+          </div>
 
-      <!-- Empty State -->
-      <div class="stream-empty hidden" id="empty-state">
-        <p class="empty-title">Clipboard is empty</p>
-        <p class="empty-hint">Type or paste anything in the box above, or share content from your phone.</p>
-        <button id="btn-sample" class="btn-sample">Load Sample Clips</button>
-      </div>
+          <!-- Empty State -->
+          <div class="stream-empty hidden" id="empty-state">
+            <p class="empty-title">Clipboard is empty</p>
+            <p class="empty-hint">Type or paste anything above, or share content from your phone.</p>
+            <button id="btn-sample" class="btn-sample">Load Sample Clips</button>
+          </div>
 
-      <!-- Clips Feed: starts in grid view, switches to list view dynamically -->
-      <div class="clips-holder view-grid" id="clips-list" role="list"></div>
-    </section>
-
-  </main>
+          <!-- Clips Feed: Grid or List -->
+          <div class="clips-holder view-grid" id="clips-list" role="list"></div>
+        </section>
+      </main>
+    </div>
+  </div>
 
   <!-- Mobile Floating Action Button (FAB) -->
   <button id="btn-mobile-fab" class="mobile-fab" aria-label="Add Clip">
@@ -213,7 +280,7 @@
         <div class="qr-box">
           <div id="qr-canvas-holder"></div>
         </div>
-        <p class="qr-text">Scan with your iPhone or Android camera to pair</p>
+        <p class="qr-text">Scan with your iPhone or Android camera to sync instantly</p>
 
         <div class="code-box">
           <label>6-Digit Room Code</label>
@@ -224,7 +291,7 @@
         </div>
 
         <div class="switch-box">
-          <input type="text" id="input-custom-room" placeholder="Join room..." maxlength="12">
+          <input type="text" id="input-custom-room" placeholder="Join room code..." maxlength="12">
           <button id="btn-switch-room" class="btn-tool">Join</button>
           <button id="btn-new-room" class="btn-tool">🎲 New</button>
         </div>
