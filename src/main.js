@@ -49,11 +49,21 @@ const countText = document.getElementById('count-text');
 const countCode = document.getElementById('count-code');
 const countPinned = document.getElementById('count-pinned');
 
-// Main Input & Toolbar
-const mainInput = document.getElementById('main-input');
-const btnSubmit = document.getElementById('btn-submit');
-const btnPasteSys = document.getElementById('btn-paste-sys');
-const composeTypeTag = document.getElementById('compose-type-tag');
+// Compose Modal Elements
+const modalCompose = document.getElementById('modal-compose');
+const btnCloseCompose = document.getElementById('btn-close-compose');
+const modalClipInput = document.getElementById('modal-clip-input');
+const modalTypeTag = document.getElementById('modal-type-tag');
+const btnModalPaste = document.getElementById('btn-modal-paste');
+const btnModalSubmit = document.getElementById('btn-modal-submit');
+
+// Trigger Buttons for Compose Modal
+const btnTopbarAdd = document.getElementById('btn-topbar-add');
+const btnSidebarAdd = document.getElementById('btn-sidebar-add');
+const btnEmptyAdd = document.getElementById('btn-empty-add');
+const btnMobileFab = document.getElementById('btn-mobile-fab');
+
+// Toolbar & Search
 const searchInput = document.getElementById('search-input');
 const btnClearSearch = document.getElementById('btn-clear-search');
 const btnViewGrid = document.getElementById('btn-view-grid');
@@ -64,7 +74,6 @@ const clipsList = document.getElementById('clips-list');
 const emptyState = document.getElementById('empty-state');
 const loadingState = document.getElementById('loading-state');
 const btnSample = document.getElementById('btn-sample');
-const btnMobileFab = document.getElementById('btn-mobile-fab');
 const toastContainer = document.getElementById('toast-container');
 
 // Modals: Pair
@@ -205,10 +214,10 @@ function detectContentType(str) {
 }
 
 function updateComposeBadge(val) {
-  if (!composeTypeTag) return;
+  if (!modalTypeTag) return;
   const type = detectContentType(val);
   const label = type === 'link' ? '🔗 Link' : (type === 'code' ? '💻 Code' : '📝 Text');
-  composeTypeTag.textContent = label;
+  modalTypeTag.textContent = label;
 }
 
 /* ==========================================================================
@@ -531,10 +540,24 @@ function bindEvents() {
     item.addEventListener('click', () => setActiveFilter(item.dataset.filter));
   });
 
-  // Compose input & submit
-  if (mainInput) {
-    mainInput.addEventListener('input', () => updateComposeBadge(mainInput.value));
-    mainInput.addEventListener('keydown', (e) => {
+  // Compose Modal open triggers
+  if (btnTopbarAdd) btnTopbarAdd.addEventListener('click', openComposeModal);
+  if (btnSidebarAdd) btnSidebarAdd.addEventListener('click', openComposeModal);
+  if (btnEmptyAdd) btnEmptyAdd.addEventListener('click', openComposeModal);
+  if (btnMobileFab) btnMobileFab.addEventListener('click', openComposeModal);
+
+  // Compose Modal internal actions
+  if (btnCloseCompose) btnCloseCompose.addEventListener('click', closeComposeModal);
+  if (btnModalSubmit) btnModalSubmit.addEventListener('click', submitCompose);
+  if (btnModalPaste) {
+    btnModalPaste.addEventListener('click', async () => {
+      await pasteIntoInput(modalClipInput);
+    });
+  }
+
+  if (modalClipInput) {
+    modalClipInput.addEventListener('input', () => updateComposeBadge(modalClipInput.value));
+    modalClipInput.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
         submitCompose();
@@ -542,15 +565,23 @@ function bindEvents() {
     });
   }
 
-  if (btnSubmit) {
-    btnSubmit.addEventListener('click', submitCompose);
-  }
+  // Global keyboard shortcuts (N / C to add, Esc to close modals)
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeComposeModal();
+      if (modalPair) modalPair.classList.add('hidden');
+      if (modalSettings) modalSettings.classList.add('hidden');
+      return;
+    }
 
-  if (btnPasteSys) {
-    btnPasteSys.addEventListener('click', async () => {
-      await pasteIntoInput(mainInput);
-    });
-  }
+    const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+    if (activeTag !== 'input' && activeTag !== 'textarea') {
+      if (e.key.toLowerCase() === 'n' || e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        openComposeModal();
+      }
+    }
+  });
 
   // Search
   if (searchInput) {
@@ -612,15 +643,6 @@ function bindEvents() {
     });
   }
 
-  // Mobile FAB: focus input smoothly
-  if (btnMobileFab) {
-    btnMobileFab.addEventListener('click', () => {
-      if (mainInput) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => mainInput.focus(), 250);
-      }
-    });
-  }
 
   // Modals: Room & Pair
   if (btnRoom) btnRoom.addEventListener('click', openPairModal);
@@ -705,6 +727,7 @@ function bindEvents() {
 
   // Backdrop modal dismiss
   window.addEventListener('click', (e) => {
+    if (modalCompose && e.target === modalCompose) closeComposeModal();
     if (modalPair && e.target === modalPair) modalPair.classList.add('hidden');
     if (modalSettings && e.target === modalSettings) modalSettings.classList.add('hidden');
   });
@@ -720,13 +743,27 @@ function bindEvents() {
 }
 
 /* ==========================================================================
-   Compose & Submission
+   Compose Modal & Submission
    ========================================================================== */
+function openComposeModal() {
+  sound.playPop();
+  if (modalCompose) {
+    modalCompose.classList.remove('hidden');
+    if (modalClipInput) {
+      setTimeout(() => modalClipInput.focus(), 60);
+    }
+  }
+}
+
+function closeComposeModal() {
+  if (modalCompose) modalCompose.classList.add('hidden');
+}
+
 async function submitCompose() {
-  if (!mainInput) return;
-  const content = mainInput.value.trim();
+  if (!modalClipInput) return;
+  const content = modalClipInput.value.trim();
   if (!content) {
-    mainInput.focus();
+    modalClipInput.focus();
     return;
   }
 
@@ -738,9 +775,10 @@ async function submitCompose() {
   });
 
   sound.playSyncTone();
-  mainInput.value = '';
+  modalClipInput.value = '';
   updateComposeBadge('');
-  showToast('Synced to devices! ⚡', 'success');
+  closeComposeModal();
+  showToast('Synced to all devices! ⚡', 'success');
 }
 
 async function pasteIntoInput(textarea) {
