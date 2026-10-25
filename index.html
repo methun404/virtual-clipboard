@@ -7,7 +7,7 @@
   
   <!-- SEO & PWA Meta -->
   <meta name="description" content="Lightning-fast virtual clipboard manager. Sync text, links, and code snippets across your MacBook, iPhone, and Android.">
-  <meta name="theme-color" content="#0B0D11">
+  <meta name="theme-color" content="#0E1117">
   <meta name="color-scheme" content="dark">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -27,46 +27,37 @@
   <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-  <div class="dashboard-container">
-
-    <!-- Top Navigation Bar -->
-    <header class="dashboard-header">
-      <div class="header-brand-group">
-        <div class="brand-logo" id="btn-brand">
-          <span class="logo-lightning">⚡</span>
+  <!-- Standard Top Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-left">
+        <a href="/" class="brand" id="btn-brand">
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
           <span class="brand-title">ClipSync</span>
-        </div>
+        </a>
 
-        <button id="btn-room" class="room-indicator-pill" title="Click to view QR code or change room" aria-label="Room Settings">
-          <span class="pulse-dot online" id="status-dot"></span>
-          <span class="room-tag hide-xs">Room:</span>
-          <span class="room-name" id="display-room-id">CLIP-....</span>
+        <div class="nav-separator hide-mobile"></div>
+
+        <button id="btn-room" class="room-badge" title="Click to view QR code or change room">
+          <span class="status-dot online" id="status-dot"></span>
+          <span class="room-label hide-xs">Room:</span>
+          <span class="room-code" id="display-room-id">CLIP-....</span>
         </button>
       </div>
 
-      <div class="header-actions-group">
-        <!-- Install PWA Button (Shows when install prompt is available) -->
-        <button id="btn-install-pwa" class="btn-pill-subtle hidden" title="Install App">
+      <div class="nav-right">
+        <!-- Install PWA Button -->
+        <button id="btn-install-pwa" class="btn-nav hidden" title="Install App">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
           </svg>
           <span class="hide-xs">Install</span>
         </button>
 
-        <button id="btn-sound" class="btn-circle" title="Toggle audio feedback" aria-label="Sound Toggle">
-          <svg id="sound-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-          </svg>
-          <svg id="sound-icon-off" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <line x1="23" y1="9" x2="17" y2="15"></line>
-            <line x1="17" y1="9" x2="23" y2="15"></line>
-          </svg>
-        </button>
-
-        <button id="btn-pair" class="btn-pill-subtle" title="Pair your iPhone or Android">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="btn-pair" class="btn-nav" title="Pair iPhone or Android">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
             <rect x="14" y="14" width="7" height="7"></rect>
@@ -75,16 +66,32 @@
           <span class="hide-mobile">Pair Device</span>
         </button>
 
-        <button id="btn-settings" class="btn-circle" title="Cloud Settings" aria-label="Settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="btn-sound" class="btn-icon" title="Toggle audio feedback" aria-label="Toggle Sound">
+          <svg id="sound-icon-on" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="sound-icon-off" class="hidden" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <button id="btn-settings" class="btn-icon" title="Cloud Settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
         </button>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <!-- Mobile-Only Quick Filter Tabs Strip (Horizontal scroll on phones) -->
+  <!-- Main Container -->
+  <div class="dashboard-container">
+
+    <!-- Mobile-Only Filter Chips (Horizontal scroll on phones) -->
     <div class="mobile-filter-strip show-mobile-only">
       <nav class="mobile-filter-scroller" role="tablist">
         <button class="mobile-chip active" data-filter="all">All <span class="chip-num" id="mob-count-all">0</span></button>
@@ -95,7 +102,7 @@
       </nav>
     </div>
 
-    <!-- Main Two-Column Dashboard Workspace -->
+    <!-- Workspace Layout -->
     <div class="dashboard-workspace">
 
       <!-- LEFT SIDEBAR: Desktop / Tablet Compose & Filters -->
@@ -198,14 +205,14 @@
 
           <div class="toolbar-actions">
             <!-- Mobile Quick Paste (visible on mobile only) -->
-            <button id="btn-mob-quick-paste" class="btn-pill-subtle show-mobile-only" title="Paste from clipboard">
+            <button id="btn-mob-quick-paste" class="btn-subtle-tool show-mobile-only" title="Paste from clipboard">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
               </svg>
               <span>Paste</span>
             </button>
 
-            <button id="btn-export-clips" class="btn-pill-subtle hide-xs" title="Export JSON history">
+            <button id="btn-export-clips" class="btn-subtle-tool hide-xs" title="Export JSON history">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -214,7 +221,7 @@
               <span>Export</span>
             </button>
 
-            <button id="btn-clear-history" class="btn-pill-subtle danger" title="Clear unpinned history">
+            <button id="btn-clear-history" class="btn-subtle-tool danger" title="Clear unpinned history">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="3 6 5 6 21 6"></polyline>
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -235,10 +242,10 @@
           <div class="stream-empty hidden" id="empty-state">
             <div class="empty-icon-wrap">📋</div>
             <p class="empty-title">Virtual clipboard is empty</p>
-            <p class="empty-hint">Type or paste something to sync across your MacBook, iPhone, and Android.</p>
+            <p class="empty-hint">Type or paste something on the left, or share directly from your phone.</p>
             <div class="empty-btn-row">
               <button id="btn-empty-add" class="btn-primary-sync show-mobile-only">Add New Clip</button>
-              <button id="btn-sample" class="btn-pill-subtle">Load Sample Clips</button>
+              <button id="btn-sample" class="btn-subtle-tool">Load Sample Clips</button>
             </div>
           </div>
 
@@ -249,7 +256,7 @@
 
     </div>
 
-    <!-- Mobile Floating Action Button (FAB) for 1-Thumb Quick Add -->
+    <!-- Mobile Floating Action Button (FAB) -->
     <button id="btn-mobile-fab" class="mobile-fab show-mobile-only" aria-label="Add New Clip" title="Add New Clip">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -311,14 +318,14 @@
             <label>6-Digit Room Code</label>
             <div class="code-row">
               <input type="text" id="pair-room-input" readonly value="CLIP-....">
-              <button id="btn-copy-link" class="btn-pill-subtle">Copy Link</button>
+              <button id="btn-copy-link" class="btn-subtle-tool">Copy Link</button>
             </div>
           </div>
 
           <div class="switch-box">
             <input type="text" id="input-custom-room" placeholder="Enter room code..." maxlength="12">
-            <button id="btn-switch-room" class="btn-pill-subtle">Join</button>
-            <button id="btn-new-room" class="btn-pill-subtle">🎲 New</button>
+            <button id="btn-switch-room" class="btn-subtle-tool">Join</button>
+            <button id="btn-new-room" class="btn-subtle-tool">🎲 New</button>
           </div>
         </div>
       </div>
@@ -342,7 +349,7 @@
             placeholder='{"apiKey": "...", "databaseURL": "...", "projectId": "..."}'
           ></textarea>
           <div class="settings-btn-row">
-            <button id="btn-reset-firebase" class="btn-pill-subtle danger">Reset to Local</button>
+            <button id="btn-reset-firebase" class="btn-subtle-tool danger">Reset to Local</button>
             <button id="btn-save-firebase" class="btn-primary-sync">Save & Connect</button>
           </div>
         </div>

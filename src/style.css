@@ -1,23 +1,24 @@
 /* ==========================================================================
-   ClipSync — Fully Responsive Modern Design System
+   ClipSync — Standard Clean Dashboard Styles
    ========================================================================== */
 
 :root {
   --bg-app: #0B0D11;
+  --bg-nav: #0E1117;
   --bg-surface: #12151B;
   --bg-surface-elevated: #181C24;
   --bg-surface-hover: #1E232E;
   --bg-input: #0E1015;
 
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.15);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
   --border-active: #6366F1;
 
   --primary: #4F46E5;
   --primary-hover: #6366F1;
-  --primary-glow: rgba(99, 102, 241, 0.3);
+  --primary-glow: rgba(99, 102, 241, 0.25);
 
-  --text-main: #EDEDED;
+  --text-main: #F1F5F9;
   --text-secondary: #9499A6;
   --text-dim: #5C6272;
 
@@ -31,12 +32,12 @@
 
   --radius-xs: 4px;
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
   --radius-full: 9999px;
 
-  --transition: 130ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition: 120ms ease;
 }
 
 *, *::before, *::after {
@@ -64,109 +65,138 @@ body {
   overflow-x: hidden;
 }
 
-/* Dashboard Outer Container */
-.dashboard-container {
+/* ==========================================================================
+   Standard Top Navbar (Clean & Familiar)
+   ========================================================================== */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  height: 56px;
+  background: var(--bg-nav);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+}
+
+.nav-container {
   width: 100%;
   max-width: 1520px;
   margin: 0 auto;
-  padding: 16px 24px 60px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* ==========================================================================
-   Header Navbar
-   ========================================================================== */
-.dashboard-header {
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  gap: 12px;
+  gap: 16px;
 }
 
-.header-brand-group {
+.nav-left {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 0;
+  gap: 16px;
 }
 
-.brand-logo {
+.brand {
   display: flex;
   align-items: center;
   gap: 8px;
+  text-decoration: none;
+  color: var(--text-main);
   user-select: none;
-  cursor: pointer;
 }
 
-.logo-lightning {
-  font-size: 1.15rem;
+.brand-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--primary-hover);
 }
 
 .brand-title {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: var(--text-main);
+  color: #FFFFFF;
 }
 
-/* Room Pill */
-.room-indicator-pill {
+.nav-separator {
+  width: 1px;
+  height: 18px;
+  background: var(--border-subtle);
+}
+
+/* Room Badge in Nav */
+.room-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   padding: 4px 10px;
-  background: var(--bg-surface-elevated);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   color: var(--text-secondary);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: all var(--transition);
-  white-space: nowrap;
 }
 
-.room-indicator-pill:hover {
-  background: var(--bg-surface-hover);
+.room-badge:hover {
+  background: rgba(255, 255, 255, 0.08);
   border-color: var(--border-hover);
   color: var(--text-main);
 }
 
-.pulse-dot {
+.status-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: var(--accent-green);
-  box-shadow: 0 0 6px var(--accent-green);
   flex-shrink: 0;
 }
 
-.room-tag {
+.room-label {
   color: var(--text-dim);
 }
 
-.room-name {
+.room-code {
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--text-main);
 }
 
-/* Header Action Buttons */
-.header-actions-group {
+/* Nav Right */
+.nav-right {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-shrink: 0;
 }
 
-.btn-circle {
-  width: 36px;
-  height: 36px;
+.btn-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.btn-nav:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-hover);
+  color: var(--text-main);
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-sm);
   background: transparent;
   border: 1px solid transparent;
@@ -178,44 +208,23 @@ body {
   transition: all var(--transition);
 }
 
-.btn-circle svg {
-  width: 18px;
-  height: 18px;
-}
-
-.btn-circle:hover {
-  background: var(--bg-surface-elevated);
+.btn-icon:hover {
+  background: rgba(255, 255, 255, 0.06);
   border-color: var(--border-subtle);
   color: var(--text-main);
 }
 
-.btn-pill-subtle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition);
-  white-space: nowrap;
-}
-
-.btn-pill-subtle:hover {
-  background: var(--bg-surface-hover);
-  border-color: var(--border-hover);
-  color: var(--text-main);
-}
-
-.btn-pill-subtle.danger:hover {
-  color: var(--accent-red);
-  border-color: rgba(239, 68, 68, 0.3);
-  background: rgba(239, 68, 68, 0.08);
+/* ==========================================================================
+   Dashboard Container
+   ========================================================================== */
+.dashboard-container {
+  width: 100%;
+  max-width: 1520px;
+  margin: 0 auto;
+  padding: 20px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* ==========================================================================
@@ -277,16 +286,16 @@ body {
 }
 
 /* ==========================================================================
-   Two-Column Workspace Layout
+   Workspace Layout (Sidebar + Main Grid)
    ========================================================================== */
 .dashboard-workspace {
   display: flex;
-  gap: 18px;
+  gap: 20px;
   align-items: flex-start;
 }
 
 /* ==========================================================================
-   Left Sidebar (Desktop / Tablet)
+   Left Sidebar
    ========================================================================== */
 .dashboard-sidebar {
   width: 320px;
@@ -295,13 +304,13 @@ body {
   flex-direction: column;
   gap: 14px;
   position: sticky;
-  top: 16px;
+  top: 76px;
 }
 
 .sidebar-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: 16px;
 }
 
@@ -325,14 +334,14 @@ body {
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
   padding: 2px 7px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-xs);
 }
 
 .compose-input {
   width: 100%;
   background: var(--bg-input);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   color: var(--text-main);
   font-family: var(--font-sans);
   font-size: 0.9rem;
@@ -381,11 +390,16 @@ body {
   color: var(--text-main);
 }
 
+.btn-subtle-tool.danger:hover {
+  color: var(--accent-red);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
 .btn-primary-sync {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 15px;
+  padding: 6px 14px;
   background: var(--primary);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-sm);
@@ -421,7 +435,7 @@ kbd {
 .sidebar-nav-list {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .nav-item {
@@ -429,7 +443,7 @@ kbd {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 8px 10px;
+  padding: 7px 10px;
   background: transparent;
   border: none;
   border-radius: var(--radius-sm);
@@ -513,7 +527,7 @@ kbd {
 }
 
 /* ==========================================================================
-   Right Main Section & Cards Grid
+   Right Main Section & Grid
    ========================================================================== */
 .dashboard-main {
   flex: 1;
@@ -523,7 +537,7 @@ kbd {
   gap: 14px;
 }
 
-/* Top Search & Toolbar */
+/* Search Toolbar */
 .content-toolbar {
   display: flex;
   align-items: center;
@@ -531,7 +545,7 @@ kbd {
   gap: 10px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: 8px 12px;
 }
 
@@ -555,18 +569,17 @@ kbd {
   width: 100%;
   background: var(--bg-input);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   color: var(--text-main);
   font-family: var(--font-sans);
   font-size: 0.88rem;
-  padding: 8px 32px 8px 34px;
+  padding: 7px 32px 7px 34px;
   outline: none;
   transition: all var(--transition);
 }
 
 .search-input:focus {
   border-color: var(--border-active);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
 }
 
 .search-input::placeholder {
@@ -581,7 +594,6 @@ kbd {
   color: var(--text-dim);
   font-size: 13px;
   cursor: pointer;
-  padding: 4px;
 }
 
 .toolbar-actions {
@@ -592,7 +604,7 @@ kbd {
 }
 
 /* ==========================================================================
-   The Responsive Grid of Clips
+   Cards Grid
    ========================================================================== */
 .clips-grid {
   display: grid;
@@ -601,14 +613,13 @@ kbd {
   width: 100%;
 }
 
-/* Clip Card */
 .grid-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: 14px 16px;
   transition: all var(--transition);
   min-height: 130px;
@@ -618,12 +629,10 @@ kbd {
 .grid-card:hover {
   background: var(--bg-surface-hover);
   border-color: var(--border-hover);
-  transform: translateY(-1px);
 }
 
 .grid-card.pinned {
   border-color: rgba(245, 158, 11, 0.4);
-  background: linear-gradient(180deg, rgba(245, 158, 11, 0.04) 0%, var(--bg-surface) 100%);
 }
 
 .card-top {
@@ -638,7 +647,7 @@ kbd {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 2px 7px;
+  padding: 2px 6px;
   border-radius: var(--radius-xs);
 }
 
@@ -667,8 +676,8 @@ kbd {
 }
 
 .btn-card-action {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: var(--radius-xs);
   background: transparent;
   border: 1px solid transparent;
@@ -681,8 +690,8 @@ kbd {
 }
 
 .btn-card-action svg {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
 }
 
 .btn-card-action:hover {
@@ -698,7 +707,6 @@ kbd {
   color: var(--accent-red);
 }
 
-/* Card Content Body */
 .card-body {
   flex: 1;
   margin-bottom: 12px;
@@ -720,7 +728,6 @@ kbd {
   text-decoration: none;
   display: block;
   word-break: break-all;
-  overflow-wrap: anywhere;
 }
 
 .link-url:hover {
@@ -730,7 +737,7 @@ kbd {
 .code-box {
   background: #080A0E;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   padding: 8px 10px;
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -746,12 +753,10 @@ kbd {
   color: #E2E8F0;
   white-space: pre-wrap;
   word-break: break-word;
-  overflow-wrap: anywhere;
   max-height: 130px;
   overflow-y: auto;
 }
 
-/* Card Footer */
 .card-footer {
   display: flex;
   align-items: center;
@@ -769,10 +774,10 @@ kbd {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 12px;
+  padding: 4px 10px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   color: var(--text-secondary);
   font-size: 0.75rem;
   font-weight: 500;
@@ -798,30 +803,30 @@ kbd {
 }
 
 /* ==========================================================================
-   Mobile Floating Action Button (FAB)
+   Mobile FAB
    ========================================================================== */
 .mobile-fab {
   display: none;
   position: fixed;
   bottom: max(24px, env(safe-area-inset-bottom));
   right: 20px;
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: var(--primary);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.55);
+  box-shadow: 0 4px 18px rgba(79, 70, 229, 0.5);
   cursor: pointer;
   z-index: 99;
   transition: transform var(--transition);
 }
 
 .mobile-fab svg {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
 }
 
 .mobile-fab:active {
@@ -829,7 +834,7 @@ kbd {
 }
 
 /* ==========================================================================
-   Loading & Empty States
+   Empty & Loader
    ========================================================================== */
 .stream-loader, .stream-empty {
   display: flex;
@@ -842,8 +847,8 @@ kbd {
 }
 
 .spinner {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border: 2px solid rgba(255, 255, 255, 0.1);
   border-top-color: var(--primary);
   border-radius: 50%;
@@ -856,19 +861,19 @@ kbd {
 }
 
 .empty-icon-wrap {
-  font-size: 2.2rem;
-  margin-bottom: 10px;
+  font-size: 2rem;
+  margin-bottom: 8px;
 }
 
 .empty-title {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-main);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .empty-hint {
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   color: var(--text-secondary);
   max-width: 380px;
   line-height: 1.5;
@@ -890,8 +895,8 @@ kbd {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -902,7 +907,7 @@ kbd {
 .modal-card {
   background: #141720;
   border: 1px solid var(--border-hover);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   width: 100%;
   max-width: 440px;
   overflow: hidden;
@@ -924,7 +929,7 @@ kbd {
 }
 
 .modal-top h3 {
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 600;
 }
 
@@ -955,7 +960,7 @@ kbd {
   justify-content: center;
   background: white;
   padding: 12px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   width: 164px;
   height: 164px;
 }
@@ -983,7 +988,7 @@ kbd {
   flex: 1;
   background: var(--bg-input);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   color: var(--text-main);
   font-family: var(--font-mono);
   font-size: 0.88rem;
@@ -1001,7 +1006,7 @@ kbd {
   width: 100%;
   background: var(--bg-input);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   color: var(--accent-cyan);
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -1035,7 +1040,7 @@ kbd {
   padding: 8px 14px;
   background: #191E28;
   border: 1px solid var(--border-hover);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   color: var(--text-main);
   font-size: 0.82rem;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
@@ -1061,18 +1066,16 @@ kbd {
 }
 
 /* ==========================================================================
-   RESPONSIVE BREAKPOINTS (Desktop, Tablet, Mobile)
+   Responsive Breakpoints
    ========================================================================== */
-
-/* Show/hide utility classes */
 .show-mobile-only {
   display: none !important;
 }
 
-/* Large Tablets & Medium Laptops (769px to 1024px) */
+/* Tablet (< 1024px) */
 @media (max-width: 1024px) {
   .dashboard-container {
-    padding: 14px 18px 60px;
+    padding: 16px 18px 60px;
   }
 
   .dashboard-sidebar {
@@ -1084,19 +1087,21 @@ kbd {
   }
 }
 
-/* Mobile & Small Tablets (< 768px) */
+/* Mobile (< 768px) */
 @media (max-width: 768px) {
-  .dashboard-container {
-    padding: 10px 12px calc(max(30px, env(safe-area-inset-bottom)) + 60px);
-    gap: 12px;
+  .nav-container {
+    padding: 0 14px;
   }
 
-  /* Show mobile-specific components */
+  .dashboard-container {
+    padding: 12px 12px calc(max(30px, env(safe-area-inset-bottom)) + 60px);
+    gap: 10px;
+  }
+
   .show-mobile-only {
     display: flex !important;
   }
 
-  /* Hide desktop sidebar on mobile */
   .hide-mobile {
     display: none !important;
   }
@@ -1110,23 +1115,15 @@ kbd {
     width: 100%;
   }
 
-  /* Single column grid on phones */
   .clips-grid {
     grid-template-columns: 1fr;
     gap: 10px;
   }
 
-  /* Mobile bottom sheet for modals */
   .modal-sheet {
     max-width: 100%;
     margin-top: auto;
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    animation: slideUpSheet 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  @keyframes slideUpSheet {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
 
   .toast-wrap {
@@ -1136,22 +1133,14 @@ kbd {
   }
 }
 
-/* Ultra-Compact Phones (< 420px) */
+/* Ultra Compact (< 420px) */
 @media (max-width: 420px) {
   .hide-xs {
     display: none !important;
   }
 
-  .dashboard-header {
-    padding: 8px 10px;
-  }
-
-  .brand-title {
-    font-size: 1rem;
-  }
-
-  .room-indicator-pill {
-    padding: 3px 7px;
-    font-size: 0.72rem;
+  .room-badge {
+    padding: 3px 6px;
+    font-size: 0.74rem;
   }
 }
